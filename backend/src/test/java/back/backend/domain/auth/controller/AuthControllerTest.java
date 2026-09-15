@@ -1,6 +1,8 @@
 package back.backend.domain.auth.controller;
 
 import back.backend.domain.auth.repository.RefreshTokenRepository;
+import back.backend.domain.auth.service.AuthService;
+import back.backend.global.exception.ApiException;
 import back.backend.domain.user.entity.User;
 import back.backend.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -31,6 +34,7 @@ class AuthControllerTest {
     @Autowired UserRepository userRepository;
     @Autowired RefreshTokenRepository refreshTokenRepository;
     @Autowired PasswordEncoder passwordEncoder;
+    @Autowired AuthService authService;
 
     @BeforeEach
     void setUp() {
@@ -97,6 +101,16 @@ class AuthControllerTest {
                         .cookie(new MockCookie(AuthController.REFRESH_COOKIE, oldToken)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error.code").value("INVALID_REFRESH_TOKEN"));
+    }
+
+    @Test
+    @DisplayName("t5 LOCAL 계정과 같은 이메일의 Google 계정은 자동 병합하지 않는다")
+    void t5_googleLoginDoesNotAutoMergeLocalAccount() throws Exception {
+        signupAndGetRefreshToken();
+
+        assertThatThrownBy(() -> authService.loginGoogle("google-1", "USER@example.com", "민준"))
+                .isInstanceOfSatisfying(ApiException.class,
+                        exception -> assertThat(exception.code()).isEqualTo("OAUTH_EMAIL_CONFLICT"));
     }
 
     private String signupAndGetRefreshToken() throws Exception {

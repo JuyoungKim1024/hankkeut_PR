@@ -50,6 +50,21 @@ public class AuthService {
     }
 
     @Transactional
+    public TokenResult loginGoogle(String providerUserId, String emailValue, String name) {
+        return userRepository.findByProviderAndProviderUserId(AuthProvider.GOOGLE, providerUserId)
+                .map(this::tokens)
+                .orElseGet(() -> {
+                    String email = normalize(emailValue);
+                    if (userRepository.existsByEmail(email)) {
+                        throw new ApiException(HttpStatus.CONFLICT, "OAUTH_EMAIL_CONFLICT",
+                                "같은 이메일의 기존 계정이 있습니다. 기존 로그인으로 인증해 주세요.");
+                    }
+                    User user = userRepository.save(User.createGoogle(email, name.trim(), providerUserId));
+                    return tokens(user);
+                });
+    }
+
+    @Transactional
     public TokenResult refresh(String refreshToken) {
         return tokens(refreshTokenService.consume(refreshToken));
     }

@@ -50,6 +50,15 @@ public class User extends BaseTimeEntity {
         return user;
     }
 
+    public static User createGoogle(String email, String name, String providerUserId) {
+        User user = new User();
+        user.email = email;
+        user.name = name;
+        user.provider = AuthProvider.GOOGLE;
+        user.providerUserId = providerUserId;
+        return user;
+    }
+
     public Long getId() {
         return id;
     }
@@ -68,5 +77,9 @@ public class User extends BaseTimeEntity {
 
     public AuthProvider getProvider() {
         return provider;
+    }
+
+    public String getProviderUserId() {
+        return providerUserId;
     }
 }
