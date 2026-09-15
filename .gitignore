@@ -1,0 +1,33 @@
+# Local AI work plans and task notes
+.work/
+
+# Local agent harnesses
+harness/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# IDE and OS files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Backend outputs
+backend/.gradle/
+backend/build/
+backend/out/
+
+# Frontend outputs
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/coverage/
