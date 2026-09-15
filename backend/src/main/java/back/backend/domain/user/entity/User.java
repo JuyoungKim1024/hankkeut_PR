@@ -41,7 +41,32 @@ public class User extends BaseTimeEntity {
     protected User() {
     }
 
+    public static User createLocal(String email, String encodedPassword, String name) {
+        User user = new User();
+        user.email = email;
+        user.password = encodedPassword;
+        user.name = name;
+        user.provider = AuthProvider.LOCAL;
+        return user;
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public AuthProvider getProvider() {
+        return provider;
     }
 }

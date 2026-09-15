@@ -14,3 +14,10 @@ spring:
 logging:
   level:
     root: warn
+
+app:
+  auth:
+    jwt-secret: test-jwt-secret-must-be-at-least-32-bytes
+    access-token-ttl: PT15M
+    refresh-token-ttl: P14D
+    cookie-secure: false
