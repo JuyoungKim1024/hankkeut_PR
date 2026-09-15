@@ -55,6 +55,7 @@ project-root/
 - The MVP should prioritize official job-posting APIs, beginning with the Saramin Open API, instead of relying on HTML crawling.
 - Never invent career history, skills, or project experience that the user has not provided.
 - Development should prioritize harness engineering: build repeatable agent workflows, clear constraints, validation loops, and observable outputs before adding unnecessary implementation complexity.
+- Keep tool usage, context loading, intermediate output, and final responses token-efficient. Read and report only what is necessary for the current work unit.
 - The Magic Patterns frontend is a visual reference, not production structure or production content.
 - Migrate the frontend to Next.js and reorganize it around the actual 한끗 product flows before implementing features.
 - Preserve only the approved visual direction, primarily its neutral color palette and typography, unless the user requests additional reuse.
@@ -84,6 +85,13 @@ Before modifying code, follow this order:
 5. Implement the smallest reasonable change.
 6. Run or identify appropriate build, test, lint, or manual validation steps.
 7. Summarize changed files, important behavior changes, and remaining considerations.
+
+During implementation:
+
+- Treat browser console errors, server console errors, unhandled promise rejections, and hydration errors as test failures. Do not report a frontend task complete while any console error remains.
+- Fix actionable warnings introduced by the current change. If an external tool emits an unavoidable warning, record its exact source and impact.
+- Keep tests green while refactoring. Improve package boundaries, names, duplication, and dependency direction as part of the current work when evidence shows it is needed.
+- Do not postpone necessary local refactoring merely because the first implementation passes; complete the Red-Green-Refactor cycle before committing.
 
 If the relevant implementation cannot be found, inspect the following before creating a new structure:
 
@@ -318,8 +326,12 @@ If tests are skipped, explain why.
 
 - Keep `main` deployable and never push to it directly.
 - Use `dev` as the integration branch and update it before starting feature work.
-- Name new feature branches `feature/{domainName}-{detail}` and bug-fix branches `fix/{domainName}-{detail}`.
-- For normal feature work, update `dev`, create a work branch, implement one feature unit, validate, commit and push, then open a PR targeting `dev`.
+- Create one branch for each large feature unit using `feature/{domainName}-{detail}` or `fix/{domainName}-{detail}`.
+- Split the large feature into small independently understandable work units and commit each completed, validated unit separately.
+- Do not create one branch per small commit; related small commits stay on the same large-feature branch.
+- For normal feature work, update `dev`, create the large-feature branch, complete its small commits, run the full branch validation, and push the branch.
+- The user creates and manages pull requests. Do not open, edit, merge, or close a PR unless the user explicitly overrides this rule.
+- At the end of a large feature unit, push only the completed branch and report the branch name, commits, validation, and suggested PR title.
 - Because this is a solo project, bootstrap, documentation, and repository-maintenance changes may be committed directly to `dev` only when the user explicitly requests it.
 - Format commit messages as `type: 작업 내용` using `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `design`, `comment`, `rename`, `remove`, or `!HOTFIX`.
 - Keep one purpose per commit and make the Korean commit subject explain the change clearly.
@@ -337,6 +349,15 @@ If tests are skipped, explain why.
 - Link the relevant issue number when one exists.
 - Modify lock files only when dependencies actually change.
 - Follow `docs/GIT_CONVENTION.md` and the repository `.gitmessage` template.
+
+### External API Gate
+
+- Never invent credentials or silently replace a required live integration with fake production behavior.
+- Use fixtures and stubs for TDD before credentials are needed.
+- When a live external API credential becomes necessary, stop before the live-integration step and ask the user for the exact items listed in `docs/EXTERNAL_SERVICES.md`.
+- Request only the service and permissions needed for the current large feature unit.
+- Never ask the user to paste secrets into chat. Ask them to place values in the ignored local `.env` file and confirm only that the variables are set.
+- Resume after checking variable presence without printing or logging secret values.
 
 ---
 
