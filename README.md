@@ -4,9 +4,10 @@
 
 ## 로컬 환경 준비
 
-루트의 예시 환경 파일을 복사한 뒤 로컬 값으로 변경합니다. 실제 비밀값이 담긴 `.env`는 Git에서 제외됩니다.
+백엔드의 예시 환경 파일을 복사한 뒤 로컬 값으로 변경합니다. 실제 비밀값이 담긴 `.env`는 Git에서 제외됩니다.
 
 ```powershell
+Set-Location backend
 Copy-Item .env.example .env
 docker compose up -d mysql
 docker compose ps
@@ -14,10 +15,9 @@ docker compose ps
 
 ## Backend
 
-PowerShell 세션에 `.env`의 `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`를 설정한 뒤 실행합니다.
+백엔드는 `backend/.env`를 자동으로 읽습니다.
 
 ```powershell
-Set-Location backend
 .\gradlew.bat bootRun
 ```
 
@@ -54,6 +54,7 @@ npm run build
 컨테이너만 종료하고 데이터 volume은 유지합니다.
 
 ```powershell
+Set-Location backend
 docker compose stop
 ```
 

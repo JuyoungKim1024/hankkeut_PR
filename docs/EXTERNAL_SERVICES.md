@@ -70,6 +70,30 @@ OPENAI_MODEL=
 ```env
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=http://localhost:8080/api/auth/google/callback
+```
+
+## Kakao OAuth
+
+필요 시점:
+
+- Google과 동일한 OAuth 공통 경계를 구현한 뒤 실제 카카오 로그인 smoke test 전에 필요합니다.
+
+준비 항목:
+
+- Kakao Developers 애플리케이션
+- Web 플랫폼 사이트 도메인 `http://localhost:3000`
+- 카카오 로그인 활성화
+- Redirect URI `http://localhost:8080/api/auth/kakao/callback`
+- 동의항목의 닉네임 및 이메일 설정
+- REST API key와 활성화한 Client Secret
+
+환경변수 예정:
+
+```env
+KAKAO_CLIENT_ID=
+KAKAO_CLIENT_SECRET=
+KAKAO_REDIRECT_URI=http://localhost:8080/api/auth/kakao/callback
 ```
 
 ## Cloudflare R2

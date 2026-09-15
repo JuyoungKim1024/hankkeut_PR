@@ -33,6 +33,10 @@ JWT_REFRESH_TOKEN_TTL=P14D
 AUTH_COOKIE_SECURE=false
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=http://localhost:8080/api/auth/google/callback
+KAKAO_CLIENT_ID=
+KAKAO_CLIENT_SECRET=
+KAKAO_REDIRECT_URI=http://localhost:8080/api/auth/kakao/callback
 ```
 
 `JWT_SECRET`은 개발과 운영을 분리하고 최소 32바이트 이상의 임의값을 사용한다.

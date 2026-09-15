@@ -37,7 +37,7 @@ Examples of supported tools:
 project-root/
 ├─ frontend/          # Next.js frontend
 ├─ backend/           # Spring Boot backend
-├─ compose.yaml       # Local MySQL infrastructure
+├─ backend/compose.yaml # Local MySQL infrastructure
 ├─ docs/              # Shared project conventions
 ├─ AGENTS.md          # Shared rules for AI coding tools
 └─ README.md           # Local setup and validation
@@ -356,7 +356,7 @@ If tests are skipped, explain why.
 - Use fixtures and stubs for TDD before credentials are needed.
 - When a live external API credential becomes necessary, stop before the live-integration step and ask the user for the exact items listed in `docs/EXTERNAL_SERVICES.md`.
 - Request only the service and permissions needed for the current large feature unit.
-- Never ask the user to paste secrets into chat. Ask them to place values in the ignored local `.env` file and confirm only that the variables are set.
+- Never ask the user to paste secrets into chat. Ask them to place backend values in the ignored `backend/.env` file and confirm only that the variables are set.
 - Resume after checking variable presence without printing or logging secret values.
 
 ---

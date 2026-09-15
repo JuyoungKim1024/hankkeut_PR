@@ -1,3 +1,5 @@
+name: project_hankkeut
+
 services:
   mysql:
     image: mysql:8.4

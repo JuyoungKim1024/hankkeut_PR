@@ -1,10 +1,8 @@
 spring:
   application:
     name: backend
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+  profiles:
+    default: local
   jpa:
     hibernate:
       ddl-auto: validate
@@ -15,13 +13,6 @@ spring:
           time_zone: UTC
   flyway:
     enabled: true
-
-app:
-  auth:
-    jwt-secret: ${JWT_SECRET}
-    access-token-ttl: ${JWT_ACCESS_TOKEN_TTL:PT15M}
-    refresh-token-ttl: ${JWT_REFRESH_TOKEN_TTL:P14D}
-    cookie-secure: ${AUTH_COOKIE_SECURE:true}
 
 server:
   shutdown: graceful
