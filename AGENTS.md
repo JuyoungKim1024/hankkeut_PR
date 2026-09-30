@@ -332,8 +332,9 @@ If tests are skipped, explain why.
 - Format commit messages as `type: 작업 내용` using `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `design`, `comment`, `rename`, `remove`, or `!HOTFIX`.
 - Keep one purpose per commit and make the Korean commit subject explain the change clearly.
 - Target PRs to `dev` and title them `[타입] #이슈번호 제목`.
-- Include the related issue, work summary, screenshots or test results, review points, and checklist in every PR description.
-- Require passing builds and tests, no conflicts, and a completed checklist before merge. Self-review is acceptable for this solo project.
+- Keep PR descriptions concise with the related issue, purpose, major changes, test results, review points, and API or database changes when applicable.
+- Do not include Markdown task-list checkboxes in PR descriptions unless the user explicitly requests them.
+- Require passing builds and tests and no conflicts before merge. Self-review is acceptable for this solo project.
 - Do not create branches, commits, pushes, pull requests, or merges unless explicitly requested.
 - Follow the team's existing branching strategy and commit convention.
 - Keep each change focused on one purpose whenever possible.
