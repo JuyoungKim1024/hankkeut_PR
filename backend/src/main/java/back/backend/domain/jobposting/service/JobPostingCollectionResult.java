@@ -8,6 +8,7 @@ public record JobPostingCollectionResult(
         int failed,
         int created,
         int updated,
-        int unchanged
+        int unchanged,
+        int closed
 ) {
 }

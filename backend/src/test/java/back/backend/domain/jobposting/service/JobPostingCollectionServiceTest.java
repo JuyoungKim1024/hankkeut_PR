@@ -38,12 +38,13 @@ class JobPostingCollectionServiceTest {
     void t1_partialFailureKeepsValidPostings() {
         JobPostingSource source = sourceReturning(new JobPostingFetchResult(
                 List.of(posting()),
-                List.of(new JobPostingSourceFailure("list-item-2", JobPostingSourceFailureCode.PARSE_ERROR))
+                List.of(new JobPostingSourceFailure("list-item-2", JobPostingSourceFailureCode.PARSE_ERROR)),
+                false
         ));
 
         JobPostingCollectionResult result = collectionService.collect(source);
 
-        assertThat(result).isEqualTo(new JobPostingCollectionResult(JobSource.SARAMIN, 1, 1, 1, 0, 0));
+        assertThat(result).isEqualTo(new JobPostingCollectionResult(JobSource.SARAMIN, 1, 1, 1, 0, 0, 0));
         assertThat(jobPostingRepository.count()).isEqualTo(1);
     }
 
@@ -66,6 +67,30 @@ class JobPostingCollectionServiceTest {
                 .isInstanceOf(JobPostingCollectionException.class)
                 .hasMessage("SARAMIN 공고 수집에 실패했습니다.")
                 .message().doesNotContain("secret-response-body");
+    }
+
+    @Test
+    @DisplayName("t3 불완전한 snapshot은 기존 활성 공고를 마감 처리하지 않는다")
+    void t3_incompleteSnapshotDoesNotClosePosting() {
+        collectionService.collect(sourceReturning(new JobPostingFetchResult(List.of(posting()), List.of(), true)));
+
+        JobPostingCollectionResult result = collectionService.collect(
+                sourceReturning(new JobPostingFetchResult(List.of(), List.of(), false)));
+
+        assertThat(result.closed()).isZero();
+        assertThat(jobPostingRepository.findAll().getFirst().getStatus()).isEqualTo(JobPostingStatus.ACTIVE);
+    }
+
+    @Test
+    @DisplayName("t4 완전한 snapshot은 누락된 기존 활성 공고를 마감 처리한다")
+    void t4_completeSnapshotClosesMissingPosting() {
+        collectionService.collect(sourceReturning(new JobPostingFetchResult(List.of(posting()), List.of(), true)));
+
+        JobPostingCollectionResult result = collectionService.collect(
+                sourceReturning(new JobPostingFetchResult(List.of(), List.of(), true)));
+
+        assertThat(result.closed()).isEqualTo(1);
+        assertThat(jobPostingRepository.findAll().getFirst().getStatus()).isEqualTo(JobPostingStatus.CLOSED);
     }
 
     private static JobPostingSource sourceReturning(JobPostingFetchResult fetchResult) {

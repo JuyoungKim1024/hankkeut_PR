@@ -112,4 +112,17 @@ public class JobPosting extends BaseTimeEntity {
     public String getContentHash() {
         return contentHash;
     }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public JobPostingStatus getStatus() {
+        return status;
+    }
+
+    public void close() {
+        status = JobPostingStatus.CLOSED;
+        contentHash = null;
+    }
 }

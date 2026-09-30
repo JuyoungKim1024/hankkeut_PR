@@ -21,12 +21,13 @@ class JobPostingSourceTest {
 
             @Override
             public JobPostingFetchResult fetch() {
-                return new JobPostingFetchResult(List.of(), List.of());
+                return new JobPostingFetchResult(List.of(), List.of(), true);
             }
         };
 
         assertThat(source.source()).isEqualTo(JobSource.SARAMIN);
         assertThat(source.fetch().postings()).isEmpty();
         assertThat(source.fetch().failures()).isEmpty();
+        assertThat(source.fetch().completeSnapshot()).isTrue();
     }
 }

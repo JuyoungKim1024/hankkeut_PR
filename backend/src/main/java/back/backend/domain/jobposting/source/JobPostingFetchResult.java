@@ -4,7 +4,8 @@ import java.util.List;
 
 public record JobPostingFetchResult(
         List<CollectedJobPosting> postings,
-        List<JobPostingSourceFailure> failures
+        List<JobPostingSourceFailure> failures,
+        boolean completeSnapshot
 ) {
 
     public JobPostingFetchResult {
