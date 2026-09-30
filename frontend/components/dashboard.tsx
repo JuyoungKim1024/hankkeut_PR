@@ -10,7 +10,7 @@ export function Dashboard() {
           <p className="font-mono-label text-[10px] uppercase text-ink-400">Sunday · Job briefing</p>
           <div className="mt-10 max-w-2xl">
             <h1 className="text-3xl font-black leading-tight tracking-tightest sm:text-4xl lg:text-[44px]">
-              민준님에게 맞는
+              나에게 맞는
               <br />새 공고가 <span className="text-accent">12개</span> 도착했어요.
             </h1>
             <p className="mt-4 max-w-lg text-sm leading-6 text-ink-300 sm:text-base">
