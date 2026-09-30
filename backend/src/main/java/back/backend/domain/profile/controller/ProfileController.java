@@ -5,8 +5,6 @@ import back.backend.domain.profile.dto.ProfileUpsertRequest;
 import back.backend.domain.profile.service.ProfileService;
 import back.backend.global.response.ApiResponse;
 import jakarta.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,13 +22,12 @@ public class ProfileController {
     }
 
     @GetMapping
-    public ApiResponse<ProfileResponse> get(@AuthenticationPrincipal Jwt jwt) {
-        return ApiResponse.success(profileService.get(Long.valueOf(jwt.getSubject())));
+    public ApiResponse<ProfileResponse> get() {
+        return ApiResponse.success(profileService.get());
     }
 
     @PutMapping
-    public ApiResponse<ProfileResponse> upsert(@AuthenticationPrincipal Jwt jwt,
-                                               @Valid @RequestBody ProfileUpsertRequest request) {
-        return ApiResponse.success(profileService.upsert(Long.valueOf(jwt.getSubject()), request));
+    public ApiResponse<ProfileResponse> upsert(@Valid @RequestBody ProfileUpsertRequest request) {
+        return ApiResponse.success(profileService.upsert(request));
     }
 }

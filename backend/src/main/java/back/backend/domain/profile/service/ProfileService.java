@@ -7,7 +7,7 @@ import back.backend.domain.profile.repository.ProfileRepository;
 import back.backend.domain.skill.entity.UserSkill;
 import back.backend.domain.skill.repository.UserSkillRepository;
 import back.backend.domain.user.entity.User;
-import back.backend.domain.user.repository.UserRepository;
+import back.backend.domain.user.service.LocalUserService;
 import back.backend.global.exception.ApiException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,29 +21,30 @@ import java.util.Set;
 @Service
 public class ProfileService {
 
-    private final UserRepository userRepository;
+    private final LocalUserService localUserService;
     private final ProfileRepository profileRepository;
     private final UserSkillRepository userSkillRepository;
 
-    public ProfileService(UserRepository userRepository, ProfileRepository profileRepository,
+    public ProfileService(LocalUserService localUserService, ProfileRepository profileRepository,
                           UserSkillRepository userSkillRepository) {
-        this.userRepository = userRepository;
+        this.localUserService = localUserService;
         this.profileRepository = profileRepository;
         this.userSkillRepository = userSkillRepository;
     }
 
-    @Transactional(readOnly = true)
-    public ProfileResponse get(Long userId) {
+    @Transactional
+    public ProfileResponse get() {
+        Long userId = localUserService.getOrCreate().getId();
         Profile profile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROFILE_NOT_FOUND", "프로필을 등록해 주세요."));
         return ProfileResponse.of(profile, userSkillRepository.findAllByUserIdOrderByIdAsc(userId));
     }
 
     @Transactional
-    public ProfileResponse upsert(Long userId, ProfileUpsertRequest request) {
+    public ProfileResponse upsert(ProfileUpsertRequest request) {
         validateUniqueSkills(request.skills());
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "인증이 필요합니다."));
+        User user = localUserService.getOrCreate();
+        Long userId = user.getId();
         Profile profile = profileRepository.findByUserId(userId)
                 .map(existing -> {
                     existing.update(request.desiredJob().trim(), request.careerLevel(), request.desiredLocation().trim());

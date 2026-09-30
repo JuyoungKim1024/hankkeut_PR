@@ -59,4 +59,27 @@ class InitialSchemaMigrationTest {
 
         assertThat(success).isTrue();
     }
+
+    @Test
+    @DisplayName("t3 인증 스키마를 제거하고 로컬 사용자 필드만 유지한다")
+    void t3_authenticationSchemaIsRemoved() {
+        Set<String> tables = jdbcClient.sql("""
+                        SELECT LOWER(table_name)
+                        FROM information_schema.tables
+                        WHERE UPPER(table_schema) = 'PUBLIC'
+                        """)
+                .query(String.class)
+                .set();
+        Set<String> userColumns = jdbcClient.sql("""
+                        SELECT LOWER(column_name)
+                        FROM information_schema.columns
+                        WHERE UPPER(table_schema) = 'PUBLIC' AND UPPER(table_name) = 'USERS'
+                        """)
+                .query(String.class)
+                .set();
+
+        assertThat(tables).doesNotContain("refresh_token");
+        assertThat(userColumns).contains("id", "name", "created_at", "updated_at")
+                .doesNotContain("email", "password", "provider", "provider_user_id");
+    }
 }
