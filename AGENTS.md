@@ -52,7 +52,12 @@ project-root/
 
 - The product name is `한끗`.
 - It connects job-posting discovery, candidate-fit analysis, skill-gap learning, cover-letter drafting, interview preparation, and application tracking.
-- The MVP should prioritize official job-posting APIs, beginning with the Saramin Open API, instead of relying on HTML crawling.
+- The product is a local, single-user personal tool; production deployment and multi-user operation are out of scope unless the user changes this direction.
+- A future release means a self-contained local installation for another individual, not a centrally hosted website. Each installation owns one local user and its local data.
+- Do not add login, signup, OAuth, JWT, session, role, or per-user authorization features while this direction remains active.
+- Job-posting sources may use official APIs or compliant collection from publicly accessible pages. Keep each source behind an adapter and prefer the most stable permitted source for the required data.
+- Crawlers must respect applicable terms, robots directives, rate limits, and access boundaries. Do not bypass authentication, CAPTCHA, paywalls, technical controls, or collect private/personal data unnecessarily.
+- Saramin Open API is optional rather than a prerequisite. Request its credential only if its adapter is selected for data that compliant public-page collection cannot reliably provide.
 - Never invent career history, skills, or project experience that the user has not provided.
 - Development should prioritize harness engineering: build repeatable agent workflows, clear constraints, validation loops, and observable outputs before adding unnecessary implementation complexity.
 - Keep tool usage, context loading, intermediate output, and final responses token-efficient. Read and report only what is necessary for the current work unit.
@@ -147,7 +152,7 @@ If the relevant implementation cannot be found, inspect the following before cre
 - Do not duplicate the same API calling logic across multiple components.
 - Handle loading, empty, error, and success states.
 - Perform basic validation for user input on the frontend.
-- Check authentication state and permissions for protected pages.
+- Treat each installation as one local user; do not add account-gated pages.
 - When backend response fields change, update related types, API clients, and UI code together.
 - Provide alternative text for meaningful images where possible.
 - Use semantic HTML elements for buttons, links, forms, and navigation.
@@ -186,8 +191,6 @@ Do not claim that a command was executed unless it was actually executed.
 - Gradle 9
 - Spring MVC
 - Spring Data JPA
-- Spring Security
-- OAuth2 / JWT
 - MySQL
 - Flyway
 
@@ -203,7 +206,7 @@ Follow the existing project structure. In general, keep the following responsibi
 - Entity: persistence model
 - DTO: API request and response model
 - Mapper: conversion between entities and DTOs
-- Config: security, CORS, persistence, and application configuration
+- Config: CORS, persistence, and application configuration
 
 ### Implementation Rules
 
@@ -217,9 +220,7 @@ Follow the existing project structure. In general, keep the following responsibi
 - Consider lazy loading, N+1 queries, and recursive serialization.
 - Follow the existing shared API response and exception format.
 - When adding exceptions, review the global exception handler and correct HTTP status code.
-- Use the existing `SecurityContext` or authentication utility for authenticated user information.
-- Enforce authorization on the backend, not only on the frontend.
-- Review JWT policies when modifying logout, refresh, expiration, or token revocation.
+- Resolve user-owned data through the shared local-user boundary instead of request credentials.
 - For file uploads, validate file size, extension, MIME type, and storage failures.
 - Add timeouts and error handling for external API calls.
 - Use asynchronous processing or messaging systems only when there is a confirmed requirement.
@@ -270,26 +271,22 @@ If tests are skipped, explain why.
 - Distinguish between full updates and partial updates.
 - Confirm whether deletion is physical or logical.
 - Use consistent error codes and messages.
-- Distinguish authentication failure from insufficient permission.
 - When an API contract changes, update frontend types, API clients, tests, and documentation together.
 - Update Swagger or OpenAPI documentation when applicable.
 - Separate user-facing error messages from internal log messages.
 
 ---
 
-## 9. Authentication and Security Rules
+## 9. Local Application Security Rules
 
-- Never hardcode access tokens, refresh tokens, OAuth secrets, database passwords, or API keys.
+- Never hardcode access tokens, database passwords, or API keys.
 - Store secrets in environment variables or an approved secret manager.
 - Do not commit `.env` files, production configuration files, certificates, or private keys.
-- Never store or log passwords in plain text.
-- Perform authentication and authorization checks on the server.
+- Do not introduce account passwords, login sessions, or OAuth credentials for the local single-user application.
 - Allow only required Origins, Methods, and Headers in CORS configuration.
 - Avoid insecure configurations such as wildcard origins with credentials.
-- Keep JWT expiration, refresh, and revocation behavior consistent with the existing policy.
-- Review refresh token storage and replay prevention.
 - Validate user input and consider SQL injection, XSS, and file upload vulnerabilities.
-- Apply ownership checks and permission checks to sensitive resources.
+- Bind personal records to the single local-user boundary consistently.
 - Do not expose stack traces or internal sensitive information in API responses.
 - Review maintenance status and known security issues before adding dependencies.
 
@@ -303,17 +300,16 @@ If tests are skipped, explain why.
 - Follow the Red-Green-Refactor cycle: write a failing test first, implement only enough code to pass it, and then refactor while keeping all tests green.
 - Do not add an MVC feature without its corresponding tests unless testing is technically impossible; in that case, explain the reason before reporting completion.
 - Annotate every test with a descriptive `@DisplayName` using the format `@DisplayName("t1 behavior and expected result")`, incrementing the lowercase number within each test class (`t1`, `t2`, `t3`, ...).
-- Prefix each test method name with the matching number and a descriptive English name, for example `void t1_googleLoginRedirectsToProviderAuthorizationUrl()`.
+- Prefix each test method name with the matching number and a descriptive English name, for example `void t1_localUserCanSaveProfile()`.
 - Use AssertJ assertions such as `assertThat`, `assertThatThrownBy`, and `assertThatCode` by default for readable assertions.
-- Write Controller tests for request validation, HTTP status codes, response bodies, authentication, and authorization behavior.
+- Write Controller tests for request validation, HTTP status codes, response bodies, and local-user behavior.
 - Write Service tests for business rules, transaction-relevant behavior, success paths, failure paths, and boundary conditions.
 - Write Repository tests for custom queries, entity mapping, constraints, sorting, pagination, and data-access boundary conditions when applicable.
-- Use integration tests when behavior crosses multiple MVC layers or depends on security, persistence, Flyway, or external configuration.
+- Use integration tests when behavior crosses multiple MVC layers or depends on persistence, Flyway, or external configuration.
 - When fixing a bug, add a regression test when practical.
 - Prefer Service unit tests for business logic.
 - Review Controller or integration tests for API changes.
 - Validate repository queries and boundary conditions.
-- Test authentication success, authentication failure, and insufficient permission separately.
 - For frontend work, review loading, empty, error, and success states.
 - Use mocks or stubs for external APIs when appropriate.
 - Never use production data or real personal information in tests.
@@ -369,8 +365,7 @@ Review related documentation when changing:
 - Environment variables
 - API paths or request and response formats
 - Database schema
-- Authentication flow
-- Deployment process
+- Local installation and execution flow
 - External service integrations
 - Team-wide technical constraints
 
@@ -380,9 +375,7 @@ Document environment variables without real values:
 DB_URL=
 DB_USERNAME=
 DB_PASSWORD=
-JWT_SECRET=
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
+OPENAI_API_KEY=
 ```
 
 ---
@@ -397,7 +390,6 @@ GOOGLE_CLIENT_SECRET=
 - Delivering code that does not compile
 - Leaving temporary mock data in production code
 - Adding unused dependencies
-- Relying only on frontend authorization
 - Creating duplicate files without checking related code
 - Hiding failures with empty exception handling
 - Claiming work that was not actually performed
