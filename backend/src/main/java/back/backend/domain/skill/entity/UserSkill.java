@@ -37,4 +37,15 @@ public class UserSkill extends BaseTimeEntity {
 
     protected UserSkill() {
     }
+
+    public static UserSkill create(User user, String skillName, SkillLevel skillLevel) {
+        UserSkill skill = new UserSkill();
+        skill.user = user;
+        skill.skillName = skillName;
+        skill.skillLevel = skillLevel;
+        return skill;
+    }
+
+    public String getSkillName() { return skillName; }
+    public SkillLevel getSkillLevel() { return skillLevel; }
 }

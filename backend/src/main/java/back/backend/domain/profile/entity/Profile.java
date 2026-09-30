@@ -38,4 +38,21 @@ public class Profile extends BaseTimeEntity {
 
     protected Profile() {
     }
+
+    public static Profile create(User user, String desiredJob, CareerLevel careerLevel, String desiredLocation) {
+        Profile profile = new Profile();
+        profile.user = user;
+        profile.update(desiredJob, careerLevel, desiredLocation);
+        return profile;
+    }
+
+    public void update(String desiredJob, CareerLevel careerLevel, String desiredLocation) {
+        this.desiredJob = desiredJob;
+        this.careerLevel = careerLevel;
+        this.desiredLocation = desiredLocation;
+    }
+
+    public String getDesiredJob() { return desiredJob; }
+    public CareerLevel getCareerLevel() { return careerLevel; }
+    public String getDesiredLocation() { return desiredLocation; }
 }

@@ -1,12 +1,15 @@
 # 한끗
 
-채용공고 탐색부터 부족 기술 학습과 지원 준비까지 연결하는 취업 준비 서비스입니다.
+채용공고 탐색부터 부족 기술 학습과 지원 준비까지 연결하는 로컬 단일 사용자 취업 준비 앱입니다. 로그인 없이 한 설치 환경의 개인 데이터만 사용합니다.
+
+현재는 개발용 로컬 실행을 기준으로 하며, 이후 다른 사용자에게 제공할 때도 중앙 사이트가 아니라 각자의 컴퓨터에서 실행되는 Docker Compose 기반 로컬 패키지를 우선합니다.
 
 ## 로컬 환경 준비
 
-루트의 예시 환경 파일을 복사한 뒤 로컬 값으로 변경합니다. 실제 비밀값이 담긴 `.env`는 Git에서 제외됩니다.
+백엔드의 예시 환경 파일을 복사한 뒤 로컬 값으로 변경합니다. 실제 비밀값이 담긴 `.env`는 Git에서 제외됩니다.
 
 ```powershell
+Set-Location backend
 Copy-Item .env.example .env
 docker compose up -d mysql
 docker compose ps
@@ -14,10 +17,9 @@ docker compose ps
 
 ## Backend
 
-PowerShell 세션에 `.env`의 `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`를 설정한 뒤 실행합니다.
+백엔드는 `backend/.env`를 자동으로 읽습니다.
 
 ```powershell
-Set-Location backend
 .\gradlew.bat bootRun
 ```
 
@@ -54,6 +56,7 @@ npm run build
 컨테이너만 종료하고 데이터 volume은 유지합니다.
 
 ```powershell
+Set-Location backend
 docker compose stop
 ```
 
