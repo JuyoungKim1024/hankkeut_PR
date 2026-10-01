@@ -4,6 +4,14 @@
 # Local agent harnesses
 harness/
 
+# Local project instructions and personal documentation
+docs/
+.github/
+AGENTS.md
+CLAUDE.md
+.agents/
+.codex/
+
 # Local environment and secrets
 .env
 .env.*
