@@ -20,6 +20,6 @@ server:
 app:
   jobs:
     collection:
-      scheduling-enabled: true
+      scheduling-enabled: false
       initial-delay: PT30S
       fixed-delay: PT6H

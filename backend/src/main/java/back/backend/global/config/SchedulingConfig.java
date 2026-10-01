@@ -8,8 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @ConditionalOnProperty(
         name = "app.jobs.collection.scheduling-enabled",
-        havingValue = "true",
-        matchIfMissing = true
+        havingValue = "true"
 )
 public class SchedulingConfig {
 }

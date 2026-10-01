@@ -16,7 +16,7 @@ class JobPostingSourceTest {
         JobPostingSource source = new JobPostingSource() {
             @Override
             public JobSource source() {
-                return JobSource.SARAMIN;
+                return JobSource.MANUAL;
             }
 
             @Override
@@ -25,7 +25,7 @@ class JobPostingSourceTest {
             }
         };
 
-        assertThat(source.source()).isEqualTo(JobSource.SARAMIN);
+        assertThat(source.source()).isEqualTo(JobSource.MANUAL);
         assertThat(source.fetch().postings()).isEmpty();
         assertThat(source.fetch().failures()).isEmpty();
         assertThat(source.fetch().completeSnapshot()).isTrue();

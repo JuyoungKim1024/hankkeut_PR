@@ -44,7 +44,7 @@ class JobPostingCollectionServiceTest {
 
         JobPostingCollectionResult result = collectionService.collect(source);
 
-        assertThat(result).isEqualTo(new JobPostingCollectionResult(JobSource.SARAMIN, 1, 1, 1, 0, 0, 0));
+        assertThat(result).isEqualTo(new JobPostingCollectionResult(JobSource.MANUAL, 1, 1, 1, 0, 0, 0));
         assertThat(jobPostingRepository.count()).isEqualTo(1);
     }
 
@@ -54,7 +54,7 @@ class JobPostingCollectionServiceTest {
         JobPostingSource source = new JobPostingSource() {
             @Override
             public JobSource source() {
-                return JobSource.SARAMIN;
+                return JobSource.MANUAL;
             }
 
             @Override
@@ -65,7 +65,7 @@ class JobPostingCollectionServiceTest {
 
         assertThatThrownBy(() -> collectionService.collect(source))
                 .isInstanceOf(JobPostingCollectionException.class)
-                .hasMessage("SARAMIN 공고 수집에 실패했습니다.")
+                .hasMessage("MANUAL 공고 수집에 실패했습니다.")
                 .message().doesNotContain("secret-response-body");
     }
 
@@ -97,7 +97,7 @@ class JobPostingCollectionServiceTest {
         return new JobPostingSource() {
             @Override
             public JobSource source() {
-                return JobSource.SARAMIN;
+                return JobSource.MANUAL;
             }
 
             @Override

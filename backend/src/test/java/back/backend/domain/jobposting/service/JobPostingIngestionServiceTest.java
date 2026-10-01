@@ -34,8 +34,8 @@ class JobPostingIngestionServiceTest {
     void t1_samePostingIsIdempotent() {
         CollectedJobPosting posting = posting("백엔드 개발자");
 
-        JobPostingIngestionResult first = ingestionService.ingest(JobSource.SARAMIN, List.of(posting));
-        JobPostingIngestionResult second = ingestionService.ingest(JobSource.SARAMIN, List.of(posting));
+        JobPostingIngestionResult first = ingestionService.ingest(JobSource.MANUAL, List.of(posting));
+        JobPostingIngestionResult second = ingestionService.ingest(JobSource.MANUAL, List.of(posting));
 
         assertThat(first).isEqualTo(new JobPostingIngestionResult(1, 1, 0, 0));
         assertThat(second).isEqualTo(new JobPostingIngestionResult(1, 0, 0, 1));
@@ -45,12 +45,12 @@ class JobPostingIngestionServiceTest {
     @Test
     @DisplayName("t2 공고 내용이 변경되면 기존 행과 내용 hash를 갱신한다")
     void t2_changedPostingUpdatesExistingRow() {
-        ingestionService.ingest(JobSource.SARAMIN, List.of(posting("백엔드 개발자")));
+        ingestionService.ingest(JobSource.MANUAL, List.of(posting("백엔드 개발자")));
         JobPosting before = jobPostingRepository.findAll().getFirst();
         String previousHash = before.getContentHash();
 
         JobPostingIngestionResult result = ingestionService.ingest(
-                JobSource.SARAMIN, List.of(posting("주니어 백엔드 개발자")));
+                JobSource.MANUAL, List.of(posting("주니어 백엔드 개발자")));
         JobPosting updated = jobPostingRepository.findAll().getFirst();
 
         assertThat(result).isEqualTo(new JobPostingIngestionResult(1, 0, 1, 0));

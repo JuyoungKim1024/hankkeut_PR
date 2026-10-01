@@ -57,7 +57,7 @@ project-root/
 - Do not add login, signup, OAuth, JWT, session, role, or per-user authorization features while this direction remains active.
 - Job-posting sources may use official APIs or compliant collection from publicly accessible pages. Keep each source behind an adapter and prefer the most stable permitted source for the required data.
 - Crawlers must respect applicable terms, robots directives, rate limits, and access boundaries. Do not bypass authentication, CAPTCHA, paywalls, technical controls, or collect private/personal data unnecessarily.
-- Saramin Open API is optional rather than a prerequisite. Request its credential only if its adapter is selected for data that compliant public-page collection cannot reliably provide.
+- Do not require an external job-posting API. Import user-selected public postings by URL and supplied content; add automated source adapters only after confirming their terms and robots directives permit collection.
 - Never invent career history, skills, or project experience that the user has not provided.
 - Development should prioritize harness engineering: build repeatable agent workflows, clear constraints, validation loops, and observable outputs before adding unnecessary implementation complexity.
 - Keep tool usage, context loading, intermediate output, and final responses token-efficient. Read and report only what is necessary for the current work unit.

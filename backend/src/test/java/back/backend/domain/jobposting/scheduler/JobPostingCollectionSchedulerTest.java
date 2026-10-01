@@ -62,7 +62,7 @@ class JobPostingCollectionSchedulerTest {
         JobPostingSource failedSource = source();
         JobPostingSource successfulSource = source();
         when(collectionService.collect(failedSource))
-                .thenThrow(new JobPostingCollectionException(JobSource.SARAMIN,
+                .thenThrow(new JobPostingCollectionException(JobSource.MANUAL,
                         new IllegalStateException("secret-response-body")));
         when(collectionService.collect(successfulSource)).thenReturn(successResult());
         JobPostingCollectionScheduler scheduler = new JobPostingCollectionScheduler(
@@ -73,18 +73,18 @@ class JobPostingCollectionSchedulerTest {
         assertThat(result.attempted()).isEqualTo(2);
         assertThat(result.succeeded()).isEqualTo(1);
         assertThat(result.failures()).containsExactly(
-                new JobPostingCollectionRunFailure(JobSource.SARAMIN, "IllegalStateException"));
+                new JobPostingCollectionRunFailure(JobSource.MANUAL, "IllegalStateException"));
         assertThat(result.toString()).doesNotContain("secret-response-body");
         verify(collectionService).collect(successfulSource);
     }
 
     private static JobPostingSource source() {
         JobPostingSource source = mock(JobPostingSource.class);
-        when(source.source()).thenReturn(JobSource.SARAMIN);
+        when(source.source()).thenReturn(JobSource.MANUAL);
         return source;
     }
 
     private static JobPostingCollectionResult successResult() {
-        return new JobPostingCollectionResult(JobSource.SARAMIN, 1, 0, 1, 0, 0, 0);
+        return new JobPostingCollectionResult(JobSource.MANUAL, 1, 0, 1, 0, 0, 0);
     }
 }
