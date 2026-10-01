@@ -5,6 +5,7 @@ import type {
   ManualJobPostingImportResult,
   ManualJobPostingInput,
 } from "@/lib/job-postings";
+import type { Profile } from "@/lib/profile";
 
 type ApiError = {
   code: string;
@@ -48,6 +49,25 @@ export async function getJobPosting(jobId: number): Promise<JobPostingDetail> {
 export async function importJobPosting(input: ManualJobPostingInput): Promise<ManualJobPostingImportResult> {
   return request<ManualJobPostingImportResult>("/api/jobs/imports", {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
+export async function getProfile(): Promise<Profile | null> {
+  try {
+    return await request<Profile>("/api/profile");
+  } catch (error) {
+    if (error instanceof BackendApiError && error.status === 404 && error.code === "PROFILE_NOT_FOUND") {
+      return null;
+    }
+    throw error;
+  }
+}
+
+export async function saveProfile(input: Profile): Promise<Profile> {
+  return request<Profile>("/api/profile", {
+    method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   });
