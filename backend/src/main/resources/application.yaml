@@ -16,3 +16,10 @@ spring:
 
 server:
   shutdown: graceful
+
+app:
+  jobs:
+    collection:
+      scheduling-enabled: true
+      initial-delay: PT30S
+      fixed-delay: PT6H

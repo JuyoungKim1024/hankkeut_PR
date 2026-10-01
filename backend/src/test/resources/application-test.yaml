@@ -14,3 +14,8 @@ spring:
 logging:
   level:
     root: warn
+
+app:
+  jobs:
+    collection:
+      scheduling-enabled: false
