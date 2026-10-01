@@ -41,4 +41,38 @@ public class Resume extends BaseTimeEntity {
 
     protected Resume() {
     }
+
+    public static Resume create(User user,
+                                String fileUrl,
+                                ResumeFileType fileType,
+                                String originalFileName,
+                                String extractedText) {
+        Resume resume = new Resume();
+        resume.user = user;
+        resume.fileUrl = fileUrl;
+        resume.fileType = fileType;
+        resume.originalFileName = originalFileName;
+        resume.extractedText = extractedText;
+        return resume;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public ResumeFileType getFileType() {
+        return fileType;
+    }
+
+    public String getOriginalFileName() {
+        return originalFileName;
+    }
+
+    public String getExtractedText() {
+        return extractedText;
+    }
 }

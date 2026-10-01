@@ -33,6 +33,7 @@ Thumbs.db
 backend/.gradle/
 backend/build/
 backend/out/
+backend/data/
 
 # Frontend outputs
 frontend/node_modules/
