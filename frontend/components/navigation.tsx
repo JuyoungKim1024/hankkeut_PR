@@ -1,12 +1,13 @@
 "use client";
 
-import { BriefcaseBusiness, Plus, UserRound } from "lucide-react";
+import { BriefcaseBusiness, FileText, Plus, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const items = [
   { href: "/jobs", label: "공고 보관함", icon: BriefcaseBusiness, exact: true },
   { href: "/jobs/new", label: "공고 추가", icon: Plus, exact: false },
+  { href: "/resumes", label: "이력서", icon: FileText, exact: true },
   { href: "/profile", label: "내 프로필", icon: UserRound, exact: true },
 ];
 
@@ -17,7 +18,7 @@ export function Navigation({ mobile = false }: { mobile?: boolean }) {
     return (
       <nav
         aria-label="모바일 주요 메뉴"
-        className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 border-t border-ink-200 bg-white px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-4 border-t border-ink-200 bg-white px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 lg:hidden"
       >
         {items.map((item) => {
           const active = item.exact ? pathname === item.href || pathname.startsWith("/jobs/") && pathname !== "/jobs/new" : pathname === item.href;

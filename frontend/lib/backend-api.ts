@@ -6,6 +6,7 @@ import type {
   ManualJobPostingInput,
 } from "@/lib/job-postings";
 import type { Profile } from "@/lib/profile";
+import type { ResumeSummary } from "@/lib/resumes";
 
 type ApiError = {
   code: string;
@@ -71,6 +72,36 @@ export async function saveProfile(input: Profile): Promise<Profile> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   });
+}
+
+export async function getResumes(): Promise<ResumeSummary[]> {
+  return request<ResumeSummary[]>("/api/resumes");
+}
+
+export async function uploadResume(file: File): Promise<ResumeSummary> {
+  const formData = new FormData();
+  formData.set("file", file);
+  return request<ResumeSummary>("/api/resumes", { method: "POST", body: formData });
+}
+
+export async function deleteResume(resumeId: number): Promise<void> {
+  let response: Response;
+  try {
+    response = await fetch(`${backendBaseUrl}/api/resumes/${resumeId}`, {
+      method: "DELETE",
+      cache: "no-store",
+    });
+  } catch {
+    throw new BackendApiError(503, "BACKEND_UNAVAILABLE", "백엔드 서버에 연결할 수 없습니다.");
+  }
+  if (!response.ok) {
+    const body = (await response.json()) as ApiResponse<never>;
+    throw new BackendApiError(
+      response.status,
+      body.error?.code ?? "BACKEND_ERROR",
+      body.error?.message ?? "이력서를 삭제하지 못했습니다.",
+    );
+  }
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
