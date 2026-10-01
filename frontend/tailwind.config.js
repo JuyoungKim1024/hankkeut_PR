@@ -16,6 +16,7 @@ module.exports = {content: [
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       colors: {
+        accent: '#d8ff3e',
         ink: {
           50: '#fafafa',
           100: '#f4f4f5',
