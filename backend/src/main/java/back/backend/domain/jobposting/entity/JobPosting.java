@@ -109,6 +109,10 @@ public class JobPosting extends BaseTimeEntity {
         return title;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getContentHash() {
         return contentHash;
     }
