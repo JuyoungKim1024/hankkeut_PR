@@ -1,6 +1,7 @@
 package back.backend.domain.jobposting.entity;
 
 import back.backend.global.entity.BaseTimeEntity;
+import back.backend.domain.jobposting.source.CollectedJobPosting;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -70,5 +71,62 @@ public class JobPosting extends BaseTimeEntity {
     private String contentHash;
 
     protected JobPosting() {
+    }
+
+    public static JobPosting create(JobSource source, CollectedJobPosting collected, String contentHash) {
+        JobPosting posting = new JobPosting();
+        posting.source = source;
+        posting.externalId = collected.externalId();
+        posting.apply(collected, contentHash);
+        return posting;
+    }
+
+    public void update(CollectedJobPosting collected, String contentHash) {
+        apply(collected, contentHash);
+    }
+
+    public boolean hasContentHash(String candidate) {
+        return contentHash != null && contentHash.equals(candidate);
+    }
+
+    private void apply(CollectedJobPosting collected, String contentHash) {
+        companyName = collected.companyName();
+        title = collected.title();
+        jobCategory = collected.jobCategory();
+        career = collected.career();
+        location = collected.location();
+        description = collected.description();
+        qualification = collected.qualification();
+        preference = collected.preference();
+        originalUrl = collected.originalUrl();
+        postedAt = collected.postedAt();
+        expiredAt = collected.expiredAt();
+        status = collected.status();
+        this.contentHash = contentHash;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getContentHash() {
+        return contentHash;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public JobPostingStatus getStatus() {
+        return status;
+    }
+
+    public void close() {
+        status = JobPostingStatus.CLOSED;
+        contentHash = null;
     }
 }

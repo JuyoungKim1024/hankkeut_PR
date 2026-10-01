@@ -57,7 +57,7 @@ project-root/
 - Do not add login, signup, OAuth, JWT, session, role, or per-user authorization features while this direction remains active.
 - Job-posting sources may use official APIs or compliant collection from publicly accessible pages. Keep each source behind an adapter and prefer the most stable permitted source for the required data.
 - Crawlers must respect applicable terms, robots directives, rate limits, and access boundaries. Do not bypass authentication, CAPTCHA, paywalls, technical controls, or collect private/personal data unnecessarily.
-- Saramin Open API is optional rather than a prerequisite. Request its credential only if its adapter is selected for data that compliant public-page collection cannot reliably provide.
+- Do not require an external job-posting API. Import user-selected public postings by URL and supplied content; add automated source adapters only after confirming their terms and robots directives permit collection.
 - Never invent career history, skills, or project experience that the user has not provided.
 - Development should prioritize harness engineering: build repeatable agent workflows, clear constraints, validation loops, and observable outputs before adding unnecessary implementation complexity.
 - Keep tool usage, context loading, intermediate output, and final responses token-efficient. Read and report only what is necessary for the current work unit.
@@ -332,8 +332,9 @@ If tests are skipped, explain why.
 - Format commit messages as `type: 작업 내용` using `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `design`, `comment`, `rename`, `remove`, or `!HOTFIX`.
 - Keep one purpose per commit and make the Korean commit subject explain the change clearly.
 - Target PRs to `dev` and title them `[타입] #이슈번호 제목`.
-- Include the related issue, work summary, screenshots or test results, review points, and checklist in every PR description.
-- Require passing builds and tests, no conflicts, and a completed checklist before merge. Self-review is acceptable for this solo project.
+- Keep PR descriptions concise with the related issue, purpose, major changes, test results, review points, and API or database changes when applicable.
+- Do not include Markdown task-list checkboxes in PR descriptions unless the user explicitly requests them.
+- Require passing builds and tests and no conflicts before merge. Self-review is acceptable for this solo project.
 - Do not create branches, commits, pushes, pull requests, or merges unless explicitly requested.
 - Follow the team's existing branching strategy and commit convention.
 - Keep each change focused on one purpose whenever possible.
