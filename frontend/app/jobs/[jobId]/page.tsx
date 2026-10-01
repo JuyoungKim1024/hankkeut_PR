@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BackendUnavailable } from "@/components/backend-unavailable";
 import { BackendApiError, getJobPosting } from "@/lib/backend-api";
 import { formatDate } from "@/lib/format";
 
@@ -14,6 +15,7 @@ export default async function JobPostingDetailPage({ params }: { params: Promise
     job = await getJobPosting(parsedId);
   } catch (error) {
     if (error instanceof BackendApiError && error.status === 404) notFound();
+    if (error instanceof BackendApiError) return <BackendUnavailable />;
     throw error;
   }
 

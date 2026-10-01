@@ -1,7 +1,9 @@
 import { Plus, Search } from "lucide-react";
 import Link from "next/link";
+import { BackendUnavailable } from "@/components/backend-unavailable";
 import { JobListCard } from "@/components/job-list-card";
-import { getJobPostings } from "@/lib/backend-api";
+import { BackendApiError, getJobPostings } from "@/lib/backend-api";
+import type { JobPostingPage } from "@/lib/job-postings";
 import type { JobPostingSort, JobPostingStatus } from "@/lib/job-postings";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -14,7 +16,13 @@ export default async function JobPostingsPage({ searchParams }: { searchParams: 
   const sort = postingSort(value(raw.sort));
   const page = nonNegativeNumber(value(raw.page));
 
-  const result = await getJobPostings({ query, location, status, sort, page, size: 12 });
+  let result: JobPostingPage;
+  try {
+    result = await getJobPostings({ query, location, status, sort, page, size: 12 });
+  } catch (error) {
+    if (error instanceof BackendApiError) return <BackendUnavailable />;
+    throw error;
+  }
 
   return (
     <main className="mx-auto max-w-[1320px] px-5 pb-28 pt-8 sm:px-8 lg:px-10 lg:pb-14 lg:pt-12">
