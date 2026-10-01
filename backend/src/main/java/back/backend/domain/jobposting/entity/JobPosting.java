@@ -113,6 +113,50 @@ public class JobPosting extends BaseTimeEntity {
         return id;
     }
 
+    public JobSource getSource() {
+        return source;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public String getJobCategory() {
+        return jobCategory;
+    }
+
+    public String getCareer() {
+        return career;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getQualification() {
+        return qualification;
+    }
+
+    public String getPreference() {
+        return preference;
+    }
+
+    public String getOriginalUrl() {
+        return originalUrl;
+    }
+
+    public LocalDateTime getPostedAt() {
+        return postedAt;
+    }
+
+    public LocalDateTime getExpiredAt() {
+        return expiredAt;
+    }
+
     public String getContentHash() {
         return contentHash;
     }
