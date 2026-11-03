@@ -28,7 +28,7 @@ app:
     max-file-size-bytes: 10485760
   jobs:
     crawling:
-      allowed-hosts: ${JOB_CRAWLING_ALLOWED_HOSTS:}
+      allowed-hosts: ${JOB_CRAWLING_ALLOWED_HOSTS:www.jobkorea.co.kr}
     collection:
       scheduling-enabled: false
       initial-delay: PT30S

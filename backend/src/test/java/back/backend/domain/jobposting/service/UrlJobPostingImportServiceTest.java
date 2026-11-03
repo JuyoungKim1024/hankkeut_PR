@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +35,9 @@ class UrlJobPostingImportServiceTest {
         FetchedJobPostingPage fetched = new FetchedJobPostingPage(
                 uri, "text/html", "html".getBytes(StandardCharsets.UTF_8));
         when(pageFetcher.fetch(uri.toString())).thenReturn(fetched);
-        when(pageParser.parse(fetched)).thenReturn(new ParsedJobPostingPage("백엔드 개발자", "채용 본문"));
+        LocalDateTime deadline = LocalDateTime.of(2026, 11, 30, 23, 59, 59);
+        when(pageParser.parse(fetched)).thenReturn(new ParsedJobPostingPage(
+                "한끗랩", "백엔드 개발자", "경력 2년이상", "채용 본문", deadline));
         when(ingestionService.ingest(any(), any())).thenReturn(new JobPostingIngestionResult(1, 1, 0, 0));
         JobPosting saved = mock(JobPosting.class);
         when(saved.getId()).thenReturn(7L);
@@ -51,7 +54,10 @@ class UrlJobPostingImportServiceTest {
                 org.mockito.ArgumentMatchers.argThat(postings ->
                         postings.size() == 1
                                 && postings.getFirst().originalUrl().equals(uri.toString())
+                                && postings.getFirst().companyName().equals("한끗랩")
                                 && postings.getFirst().title().equals("백엔드 개발자")
+                                && postings.getFirst().career().equals("경력 2년이상")
+                                && postings.getFirst().expiredAt().equals(deadline)
                                 && postings.getFirst().description().equals("채용 본문"))
         );
     }

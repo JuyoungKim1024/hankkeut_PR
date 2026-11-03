@@ -36,17 +36,17 @@ public class UrlJobPostingImportService {
         String externalId = JobPostingUrlIdentity.hash(normalizedUrl);
         CollectedJobPosting posting = new CollectedJobPosting(
                 externalId,
-                companyName(uri),
+                parsed.companyName() == null ? companyName(uri) : parsed.companyName(),
                 parsed.title(),
                 "미분류",
-                null,
+                parsed.career(),
                 null,
                 parsed.description(),
                 null,
                 null,
                 normalizedUrl,
                 null,
-                null,
+                parsed.expiredAt(),
                 JobPostingStatus.ACTIVE
         );
 
