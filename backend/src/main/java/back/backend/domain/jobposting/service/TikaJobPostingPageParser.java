@@ -29,6 +29,9 @@ public class TikaJobPostingPageParser implements JobPostingPageParser {
             if (title == null) {
                 throw parseFailed("채용공고 제목을 찾을 수 없습니다.");
             }
+            if (title.length() > 255) {
+                throw parseFailed("채용공고 제목이 255자를 초과합니다.");
+            }
             if (description == null) {
                 throw parseFailed("채용공고 본문을 찾을 수 없습니다.");
             }

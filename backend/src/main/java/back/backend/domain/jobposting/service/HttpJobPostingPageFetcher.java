@@ -42,14 +42,14 @@ public class HttpJobPostingPageFetcher implements JobPostingPageFetcher {
 
         try {
             HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
-            if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                throw fetchFailed("채용공고 페이지가 HTTP " + response.statusCode() + "을 반환했습니다.");
-            }
-            String contentType = response.headers().firstValue("Content-Type").orElse("");
-            if (!isHtml(contentType)) {
-                throw fetchFailed("HTML 채용공고 페이지만 가져올 수 있습니다.");
-            }
             try (InputStream body = response.body()) {
+                if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                    throw fetchFailed("채용공고 페이지가 HTTP " + response.statusCode() + "을 반환했습니다.");
+                }
+                String contentType = response.headers().firstValue("Content-Type").orElse("");
+                if (!isHtml(contentType)) {
+                    throw fetchFailed("HTML 채용공고 페이지만 가져올 수 있습니다.");
+                }
                 byte[] content = body.readNBytes(MAX_CONTENT_BYTES + 1);
                 if (content.length > MAX_CONTENT_BYTES) {
                     throw fetchFailed("채용공고 페이지 크기가 2MB를 초과합니다.");

@@ -36,6 +36,17 @@ class TikaJobPostingPageParserTest {
                 .hasMessage("채용공고 제목을 찾을 수 없습니다.");
     }
 
+    @Test
+    @DisplayName("t3 제목이 저장 한도를 초과한 HTML 문서는 파싱 실패로 처리한다")
+    void t3_overlongTitleIsRejected() {
+        String html = "<html><head><title>" + "가".repeat(256)
+                + "</title></head><body>채용 본문</body></html>";
+
+        assertThatThrownBy(() -> parser.parse(page(html)))
+                .isInstanceOf(ApiException.class)
+                .hasMessage("채용공고 제목이 255자를 초과합니다.");
+    }
+
     private FetchedJobPostingPage page(String html) {
         return new FetchedJobPostingPage(
                 URI.create("https://jobs.example.com/jobs/123"),
