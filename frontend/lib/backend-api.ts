@@ -7,6 +7,7 @@ import type {
 } from "@/lib/job-postings";
 import type { Profile } from "@/lib/profile";
 import type { ResumeSummary } from "@/lib/resumes";
+import type { ApplicationRecord, ApplicationStatus } from "@/lib/applications";
 
 type ApiError = {
   code: string;
@@ -100,6 +101,57 @@ export async function deleteResume(resumeId: number): Promise<void> {
       response.status,
       body.error?.code ?? "BACKEND_ERROR",
       body.error?.message ?? "이력서를 삭제하지 못했습니다.",
+    );
+  }
+}
+
+export async function getApplications(status?: ApplicationStatus): Promise<ApplicationRecord[]> {
+  const query = status ? `?status=${status}` : "";
+  return request<ApplicationRecord[]>(`/api/applications${query}`);
+}
+
+export async function createApplication(input: {
+  jobPostingId: number;
+  status: ApplicationStatus;
+  memo?: string;
+  nextActionAt?: string;
+}): Promise<ApplicationRecord> {
+  return request<ApplicationRecord>("/api/applications", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
+export async function updateApplication(applicationId: number, input: {
+  status: ApplicationStatus;
+  memo?: string;
+  nextActionAt?: string;
+}): Promise<ApplicationRecord> {
+  return request<ApplicationRecord>(`/api/applications/${applicationId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
+export async function deleteApplication(applicationId: number): Promise<void> {
+  return deleteResource(`/api/applications/${applicationId}`, "지원 기록을 삭제하지 못했습니다.");
+}
+
+async function deleteResource(path: string, fallbackMessage: string): Promise<void> {
+  let response: Response;
+  try {
+    response = await fetch(`${backendBaseUrl}${path}`, { method: "DELETE", cache: "no-store" });
+  } catch {
+    throw new BackendApiError(503, "BACKEND_UNAVAILABLE", "백엔드 서버에 연결할 수 없습니다.");
+  }
+  if (!response.ok) {
+    const body = (await response.json()) as ApiResponse<never>;
+    throw new BackendApiError(
+      response.status,
+      body.error?.code ?? "BACKEND_ERROR",
+      body.error?.message ?? fallbackMessage,
     );
   }
 }
