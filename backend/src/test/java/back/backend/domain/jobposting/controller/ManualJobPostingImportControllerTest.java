@@ -1,6 +1,8 @@
 package back.backend.domain.jobposting.controller;
 
+import back.backend.domain.jobposting.dto.ManualJobPostingImportResponse;
 import back.backend.domain.jobposting.repository.JobPostingRepository;
+import back.backend.domain.jobposting.service.UrlJobPostingImportService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,9 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,6 +27,7 @@ class ManualJobPostingImportControllerTest {
 
     @Autowired MockMvc mockMvc;
     @Autowired JobPostingRepository jobPostingRepository;
+    @MockitoBean UrlJobPostingImportService urlImportService;
 
     @BeforeEach
     void setUp() {
@@ -75,6 +80,22 @@ class ManualJobPostingImportControllerTest {
                         .content(request))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error.code").value("INVALID_INPUT"));
+    }
+
+    @Test
+    @DisplayName("t4 허용된 공고 URL을 요청하면 페이지를 수집해 저장한다")
+    void t4_allowedUrlCrawlsAndStoresPosting() throws Exception {
+        when(urlImportService.importFromUrl("https://jobs.example.com/jobs/123"))
+                .thenReturn(new ManualJobPostingImportResponse(7L, 1, 0, 0));
+
+        mockMvc.perform(post("/api/jobs/imports/url")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"originalUrl":"https://jobs.example.com/jobs/123"}
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.jobPostingId").value(7))
+                .andExpect(jsonPath("$.data.created").value(1));
     }
 
     private String validRequest(String title) {

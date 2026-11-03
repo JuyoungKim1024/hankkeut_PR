@@ -19,6 +19,12 @@ docker compose ps
 
 백엔드는 `backend/.env`를 자동으로 읽습니다.
 
+URL 수집을 사용할 사이트의 호스트를 쉼표로 구분해 `JOB_CRAWLING_ALLOWED_HOSTS`에 설정합니다. 로그인이나 접근 제한이 없는 공개 채용공고 호스트만 등록합니다.
+
+```env
+JOB_CRAWLING_ALLOWED_HOSTS=careers.example.com,jobs.example.org
+```
+
 ```powershell
 .\gradlew.bat bootRun
 ```
