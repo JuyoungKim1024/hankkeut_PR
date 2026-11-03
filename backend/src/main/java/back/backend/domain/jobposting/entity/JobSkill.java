@@ -36,4 +36,20 @@ public class JobSkill extends BaseTimeEntity {
 
     protected JobSkill() {
     }
+
+    public static JobSkill create(JobPosting jobPosting, String skillName, JobSkillType skillType) {
+        JobSkill skill = new JobSkill();
+        skill.jobPosting = jobPosting;
+        skill.skillName = skillName;
+        skill.skillType = skillType;
+        return skill;
+    }
+
+    public String getSkillName() {
+        return skillName;
+    }
+
+    public JobSkillType getSkillType() {
+        return skillType;
+    }
 }
