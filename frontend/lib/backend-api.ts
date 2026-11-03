@@ -56,6 +56,14 @@ export async function importJobPosting(input: ManualJobPostingInput): Promise<Ma
   });
 }
 
+export async function importJobPostingFromUrl(originalUrl: string): Promise<ManualJobPostingImportResult> {
+  return request<ManualJobPostingImportResult>("/api/jobs/imports/url", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ originalUrl }),
+  });
+}
+
 export async function getProfile(): Promise<Profile | null> {
   try {
     return await request<Profile>("/api/profile");

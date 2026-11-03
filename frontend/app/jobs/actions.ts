@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { BackendApiError, importJobPosting } from "@/lib/backend-api";
+import { BackendApiError, importJobPosting, importJobPostingFromUrl } from "@/lib/backend-api";
 import type { ManualJobPostingInput } from "@/lib/job-postings";
 
 export type ImportJobPostingState = {
@@ -10,6 +10,24 @@ export type ImportJobPostingState = {
 };
 
 export const initialImportJobPostingState: ImportJobPostingState = { error: null };
+
+export async function createJobPostingFromUrl(
+  _previousState: ImportJobPostingState,
+  formData: FormData,
+): Promise<ImportJobPostingState> {
+  let jobPostingId: number;
+  try {
+    const result = await importJobPostingFromUrl(requiredText(formData, "originalUrl"));
+    jobPostingId = result.jobPostingId;
+  } catch (error) {
+    return {
+      error: error instanceof BackendApiError ? error.message : "URL에서 공고를 가져오지 못했습니다.",
+    };
+  }
+
+  revalidatePath("/jobs");
+  redirect(`/jobs/${jobPostingId}`);
+}
 
 export async function createJobPosting(
   _previousState: ImportJobPostingState,

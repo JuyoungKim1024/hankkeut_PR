@@ -3,7 +3,7 @@ export type JobPostingSort = "LATEST" | "DEADLINE";
 
 export type JobPostingSummary = {
   id: number;
-  source: "MANUAL";
+  source: "MANUAL" | "WEB";
   companyName: string;
   title: string;
   jobCategory: string;
