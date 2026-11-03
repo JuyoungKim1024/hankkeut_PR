@@ -41,7 +41,7 @@ public class JobPostingUrlPolicy {
         }
 
         try {
-            return new URI(scheme, null, host, port, uri.getPath(), uri.getQuery(), null).normalize();
+            return new URI(scheme, null, host, port, uri.getPath(), canonicalQuery(host, uri), null).normalize();
         } catch (URISyntaxException exception) {
             throw invalidUrl();
         }
@@ -57,6 +57,15 @@ public class JobPostingUrlPolicy {
 
     private boolean hasCustomPort(String scheme, int port) {
         return port != -1 && !("http".equals(scheme) && port == 80) && !("https".equals(scheme) && port == 443);
+    }
+
+    private String canonicalQuery(String host, URI uri) {
+        String path = uri.getPath() == null ? "" : uri.getPath().toLowerCase(Locale.ROOT);
+        if (("www.jobkorea.co.kr".equals(host) || "jobkorea.co.kr".equals(host))
+                && path.startsWith("/recruit/gi_read/")) {
+            return null;
+        }
+        return uri.getQuery();
     }
 
     private ApiException invalidUrl() {

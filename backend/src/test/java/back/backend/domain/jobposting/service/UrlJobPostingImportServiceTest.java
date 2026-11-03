@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.Duration;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +44,8 @@ class UrlJobPostingImportServiceTest {
         when(saved.getId()).thenReturn(7L);
         when(jobPostingRepository.findBySourceAndExternalId(any(), any())).thenReturn(Optional.of(saved));
         UrlJobPostingImportService service = new UrlJobPostingImportService(
-                pageFetcher, pageParser, ingestionService, jobPostingRepository);
+                pageFetcher, pageParser, ingestionService, jobPostingRepository,
+                new JobPostingUrlPolicy("jobs.example.com"), Duration.ofHours(6));
 
         ManualJobPostingImportResponse response = service.importFromUrl(uri.toString());
 
@@ -60,5 +62,26 @@ class UrlJobPostingImportServiceTest {
                                 && postings.getFirst().expiredAt().equals(deadline)
                                 && postings.getFirst().description().equals("채용 본문"))
         );
+    }
+
+    @Test
+    @DisplayName("t2 최근 수집한 동일 URL은 외부 페이지를 다시 요청하지 않는다")
+    void t2_recentPostingSkipsExternalFetch() {
+        URI uri = URI.create("https://jobs.example.com/jobs/123");
+        JobPosting existing = mock(JobPosting.class);
+        when(existing.getId()).thenReturn(7L);
+        when(existing.getUpdatedAt()).thenReturn(LocalDateTime.now().minusMinutes(5));
+        when(jobPostingRepository.findBySourceAndExternalId(
+                JobSource.WEB, JobPostingUrlIdentity.hash(uri.toString())))
+                .thenReturn(Optional.of(existing));
+        UrlJobPostingImportService service = new UrlJobPostingImportService(
+                pageFetcher, pageParser, ingestionService, jobPostingRepository,
+                new JobPostingUrlPolicy("jobs.example.com"), Duration.ofHours(6));
+
+        ManualJobPostingImportResponse response = service.importFromUrl(uri.toString());
+
+        assertThat(response.jobPostingId()).isEqualTo(7L);
+        assertThat(response.unchanged()).isEqualTo(1);
+        org.mockito.Mockito.verifyNoInteractions(pageFetcher, pageParser, ingestionService);
     }
 }

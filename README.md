@@ -23,6 +23,8 @@ URL 수집을 사용할 사이트의 호스트를 쉼표로 구분해 `JOB_CRAWL
 
 ```env
 JOB_CRAWLING_ALLOWED_HOSTS=www.jobkorea.co.kr
+JOB_CRAWLING_REFRESH_INTERVAL=PT6H
+JOB_CRAWLING_MINIMUM_HOST_INTERVAL=PT2S
 ```
 
 ```powershell

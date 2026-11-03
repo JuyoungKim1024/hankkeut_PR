@@ -37,4 +37,16 @@ class JobPostingUrlPolicyTest {
         assertThatThrownBy(() -> policy.validate("https://jobs.example.com:8443/jobs/1"))
                 .isInstanceOf(ApiException.class);
     }
+
+    @Test
+    @DisplayName("t4 잡코리아 공고 URL의 추적 query는 제거한다")
+    void t4_jobKoreaTrackingQueryIsRemoved() {
+        JobPostingUrlPolicy jobKoreaPolicy = new JobPostingUrlPolicy("www.jobkorea.co.kr");
+
+        URI result = jobKoreaPolicy.validate(
+                "https://www.jobkorea.co.kr/Recruit/GI_Read/48861911?Oem_Code=C1&rPageCode=TL");
+
+        assertThat(result.toString())
+                .isEqualTo("https://www.jobkorea.co.kr/Recruit/GI_Read/48861911");
+    }
 }

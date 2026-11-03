@@ -29,6 +29,8 @@ app:
   jobs:
     crawling:
       allowed-hosts: ${JOB_CRAWLING_ALLOWED_HOSTS:www.jobkorea.co.kr}
+      refresh-interval: ${JOB_CRAWLING_REFRESH_INTERVAL:PT6H}
+      minimum-host-interval: ${JOB_CRAWLING_MINIMUM_HOST_INTERVAL:PT2S}
     collection:
       scheduling-enabled: false
       initial-delay: PT30S

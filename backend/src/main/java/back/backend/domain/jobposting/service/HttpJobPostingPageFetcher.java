@@ -20,10 +20,13 @@ public class HttpJobPostingPageFetcher implements JobPostingPageFetcher {
     private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(10);
 
     private final JobPostingUrlPolicy urlPolicy;
+    private final JobPostingHostRateLimiter rateLimiter;
     private final HttpClient httpClient;
 
-    public HttpJobPostingPageFetcher(JobPostingUrlPolicy urlPolicy) {
+    public HttpJobPostingPageFetcher(JobPostingUrlPolicy urlPolicy,
+                                     JobPostingHostRateLimiter rateLimiter) {
         this.urlPolicy = urlPolicy;
+        this.rateLimiter = rateLimiter;
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(5))
                 .followRedirects(HttpClient.Redirect.NEVER)
@@ -33,6 +36,7 @@ public class HttpJobPostingPageFetcher implements JobPostingPageFetcher {
     @Override
     public FetchedJobPostingPage fetch(String originalUrl) {
         URI uri = urlPolicy.validate(originalUrl);
+        rateLimiter.check(uri);
         HttpRequest request = HttpRequest.newBuilder(uri)
                 .timeout(REQUEST_TIMEOUT)
                 .header("Accept", "text/html,application/xhtml+xml")
