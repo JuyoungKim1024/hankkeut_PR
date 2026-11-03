@@ -42,6 +42,72 @@ public class Application extends BaseTimeEntity {
     @Column(name = "applied_at")
     private LocalDateTime appliedAt;
 
+    @Column(columnDefinition = "LONGTEXT")
+    private String memo;
+
+    @Column(name = "next_action_at")
+    private LocalDateTime nextActionAt;
+
     protected Application() {
+    }
+
+    public static Application create(User user,
+                                     JobPosting jobPosting,
+                                     ApplicationStatus status,
+                                     String memo,
+                                     LocalDateTime nextActionAt) {
+        Application application = new Application();
+        application.user = user;
+        application.jobPosting = jobPosting;
+        application.status = status;
+        application.memo = normalizeMemo(memo);
+        application.nextActionAt = nextActionAt;
+        if (status == ApplicationStatus.APPLIED) {
+            application.appliedAt = LocalDateTime.now();
+        }
+        return application;
+    }
+
+    public boolean canTransitionTo(ApplicationStatus next) {
+        return status.canTransitionTo(next);
+    }
+
+    public void update(ApplicationStatus nextStatus, String memo, LocalDateTime nextActionAt) {
+        if (status != ApplicationStatus.APPLIED && nextStatus == ApplicationStatus.APPLIED) {
+            appliedAt = LocalDateTime.now();
+        }
+        status = nextStatus;
+        this.memo = normalizeMemo(memo);
+        this.nextActionAt = nextActionAt;
+    }
+
+    private static String normalizeMemo(String memo) {
+        if (memo == null) return null;
+        String normalized = memo.trim();
+        return normalized.isEmpty() ? null : normalized;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public JobPosting getJobPosting() {
+        return jobPosting;
+    }
+
+    public ApplicationStatus getStatus() {
+        return status;
+    }
+
+    public LocalDateTime getAppliedAt() {
+        return appliedAt;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public LocalDateTime getNextActionAt() {
+        return nextActionAt;
     }
 }
