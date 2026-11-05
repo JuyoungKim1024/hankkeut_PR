@@ -33,9 +33,11 @@ Thumbs.db
 backend/.gradle/
 backend/build/
 backend/out/
+backend/data/
 
 # Frontend outputs
 frontend/node_modules/
 frontend/.next/
+frontend/next-env.d.ts
 frontend/out/
 frontend/coverage/

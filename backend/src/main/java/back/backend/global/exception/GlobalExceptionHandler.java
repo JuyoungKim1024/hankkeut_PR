@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -31,6 +33,18 @@ public class GlobalExceptionHandler {
 
         ApiError error = ApiError.of("INVALID_INPUT", "입력값을 확인해 주세요.", fields);
         return ResponseEntity.badRequest().body(ApiResponse.failure(error));
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingRequestPart(MissingServletRequestPartException exception) {
+        ApiError error = ApiError.of("EMPTY_RESUME", "이력서 파일을 선택해 주세요.");
+        return ResponseEntity.badRequest().body(ApiResponse.failure(error));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMaxUploadSize(MaxUploadSizeExceededException exception) {
+        ApiError error = ApiError.of("RESUME_TOO_LARGE", "이력서 파일은 10MB 이하여야 합니다.");
+        return ResponseEntity.status(HttpStatus.CONTENT_TOO_LARGE).body(ApiResponse.failure(error));
     }
 
     @ExceptionHandler(Exception.class)
