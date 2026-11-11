@@ -1,0 +1,58 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: hankkeut
+      MYSQL_USER: hankkeut
+      MYSQL_PASSWORD: ${HANKKEUT_DB_PASSWORD:?Start with scripts/LocalInstall.ps1}
+      MYSQL_ROOT_PASSWORD: ${HANKKEUT_DB_ROOT_PASSWORD:?Start with scripts/LocalInstall.ps1}
+      TZ: UTC
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", 'MYSQL_PWD="$$MYSQL_PASSWORD" mysql --protocol=TCP -h 127.0.0.1 -u "$$MYSQL_USER" -D "$$MYSQL_DATABASE" -e "SELECT 1" >/dev/null']
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  backend:
+    build: ./backend
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/hankkeut?serverTimezone=UTC&characterEncoding=UTF-8
+      DB_USERNAME: hankkeut
+      DB_PASSWORD: ${HANKKEUT_DB_PASSWORD:?Start with scripts/LocalInstall.ps1}
+      RESUME_STORAGE_PATH: /data/resumes
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${HANKKEUT_BACKEND_PORT:-8080}:8080"
+    volumes:
+      - type: bind
+        source: ${HANKKEUT_RESUME_DIR:?Start with scripts/LocalInstall.ps1}
+        target: /data/resumes
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/api/health"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  frontend:
+    build: ./frontend
+    environment:
+      BACKEND_BASE_URL: http://backend:8080
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${HANKKEUT_FRONTEND_PORT:-3000}:3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/jobs').then(r=>{if(!r.ok) process.exitCode=1}).catch(()=>{process.exitCode=1})"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql-data:
