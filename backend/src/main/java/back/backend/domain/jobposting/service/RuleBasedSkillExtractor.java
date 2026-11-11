@@ -51,6 +51,15 @@ public class RuleBasedSkillExtractor {
                 .toList();
     }
 
+    public static String canonicalName(String name) {
+        String trimmed = name.strip();
+        return RULES.stream()
+                .filter(rule -> rule.pattern().matcher(trimmed).matches())
+                .map(SkillRule::name)
+                .findFirst()
+                .orElse(trimmed);
+    }
+
     private ExtractedJobSkill extract(SkillRule rule, String requiredText, String preferredText) {
         if (rule.pattern().matcher(requiredText).find()) {
             return new ExtractedJobSkill(rule.name(), JobSkillType.REQUIRED);

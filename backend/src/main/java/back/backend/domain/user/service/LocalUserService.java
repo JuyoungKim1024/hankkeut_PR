@@ -5,6 +5,8 @@ import back.backend.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class LocalUserService {
 
@@ -20,5 +22,10 @@ public class LocalUserService {
     public User getOrCreate() {
         return userRepository.findFirstByOrderByIdAsc()
                 .orElseGet(() -> userRepository.save(User.createLocal(DEFAULT_NAME)));
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<User> find() {
+        return userRepository.findFirstByOrderByIdAsc();
     }
 }
