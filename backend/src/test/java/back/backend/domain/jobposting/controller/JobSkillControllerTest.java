@@ -70,10 +70,41 @@ class JobSkillControllerTest {
                 .andExpect(jsonPath("$.error.code").value("JOB_NOT_FOUND"));
     }
 
+    @Test
+    @DisplayName("t3 공고 기술 원문이 바뀌면 저장된 분석을 비우고 새 본문을 분석한다")
+    void t3_changedPostingClearsPreviouslyAnalyzedSkills() throws Exception {
+        long jobId = savePosting();
+        mockMvc.perform(post("/api/jobs/{jobId}/skills/analysis", jobId))
+                .andExpect(status().isOk());
+
+        savePosting("Python 기반 서비스", null, null);
+        mockMvc.perform(get("/api/jobs/{jobId}/skills", jobId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isEmpty());
+        mockMvc.perform(post("/api/jobs/{jobId}/skills/analysis", jobId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.length()").value(1))
+                .andExpect(jsonPath("$.data[0].name").value("Python"));
+    }
+
+    @Test
+    @DisplayName("t4 분석할 기술이 없는 공고는 빈 배열을 반환한다")
+    void t4_postingWithoutSkillsReturnsEmptyList() throws Exception {
+        long jobId = savePosting("업무 내용은 면접에서 안내합니다.", null, null);
+        mockMvc.perform(post("/api/jobs/{jobId}/skills/analysis", jobId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isEmpty());
+        assertThat(jobSkillRepository.count()).isZero();
+    }
+
     private long savePosting() {
+        return savePosting("Java 기반 서비스", "Spring Boot 경험", "Redis 경험");
+    }
+
+    private long savePosting(String description, String qualification, String preference) {
         CollectedJobPosting posting = new CollectedJobPosting(
                 "skill-test-1", "한끗랩", "백엔드 개발자", "백엔드", null, null,
-                "Java 기반 서비스", "Spring Boot 경험", "Redis 경험",
+                description, qualification, preference,
                 "https://example.com/jobs/skill-test-1", null, null, JobPostingStatus.ACTIVE);
         ingestionService.ingest(JobSource.MANUAL, List.of(posting));
         return jobPostingRepository.findBySourceAndExternalId(JobSource.MANUAL, "skill-test-1")

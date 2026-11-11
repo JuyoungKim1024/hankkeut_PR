@@ -29,7 +29,8 @@ public class JobSkillAnalysisService {
 
     @Transactional
     public List<JobSkillResponse> analyze(long jobPostingId) {
-        JobPosting posting = findPosting(jobPostingId);
+        JobPosting posting = jobPostingRepository.findByIdForUpdate(jobPostingId)
+                .orElseThrow(JobSkillAnalysisService::postingNotFound);
         List<ExtractedJobSkill> extracted = skillExtractor.extract(
                 posting.getDescription(), posting.getQualification(), posting.getPreference());
 
@@ -43,15 +44,15 @@ public class JobSkillAnalysisService {
 
     @Transactional(readOnly = true)
     public List<JobSkillResponse> findAll(long jobPostingId) {
-        findPosting(jobPostingId);
+        if (!jobPostingRepository.existsById(jobPostingId)) {
+            throw postingNotFound();
+        }
         return jobSkillRepository.findAllByJobPostingIdOrderBySkillTypeAscSkillNameAsc(jobPostingId).stream()
                 .map(JobSkillResponse::from)
                 .toList();
     }
 
-    private JobPosting findPosting(long jobPostingId) {
-        return jobPostingRepository.findById(jobPostingId)
-                .orElseThrow(() -> new ApiException(
-                        HttpStatus.NOT_FOUND, "JOB_NOT_FOUND", "채용공고를 찾을 수 없습니다."));
+    private static ApiException postingNotFound() {
+        return new ApiException(HttpStatus.NOT_FOUND, "JOB_NOT_FOUND", "채용공고를 찾을 수 없습니다.");
     }
 }
