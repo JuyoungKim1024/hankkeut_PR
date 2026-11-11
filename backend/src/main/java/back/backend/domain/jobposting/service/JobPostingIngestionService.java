@@ -8,6 +8,7 @@ import back.backend.domain.jobposting.source.CollectedJobPosting;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,6 +28,7 @@ public class JobPostingIngestionService {
         int created = 0;
         int updated = 0;
         int unchanged = 0;
+        LocalDateTime fetchedAt = LocalDateTime.now();
 
         for (CollectedJobPosting collected : collectedPostings) {
             String contentHash = JobPostingContentHasher.hash(collected);
@@ -36,16 +38,25 @@ public class JobPostingIngestionService {
                     .orElse(null);
 
             if (existing == null) {
-                jobPostingRepository.save(JobPosting.create(source, collected, contentHash));
-                created++;
-            } else if (existing.hasContentHash(contentHash)) {
-                unchanged++;
-            } else {
-                if (skillSourceChanged(existing, collected)) {
-                    jobSkillRepository.deleteAllByJobPostingId(existing.getId());
+                JobPosting posting = JobPosting.create(source, collected, contentHash);
+                if (source == JobSource.WEB) {
+                    posting.recordFetch(fetchedAt);
                 }
-                existing.update(collected, contentHash);
-                updated++;
+                jobPostingRepository.save(posting);
+                created++;
+            } else {
+                if (source == JobSource.WEB) {
+                    existing.recordFetch(fetchedAt);
+                }
+                if (existing.hasContentHash(contentHash)) {
+                    unchanged++;
+                } else {
+                    if (skillSourceChanged(existing, collected)) {
+                        jobSkillRepository.deleteAllByJobPostingId(existing.getId());
+                    }
+                    existing.update(collected, contentHash);
+                    updated++;
+                }
             }
         }
 
