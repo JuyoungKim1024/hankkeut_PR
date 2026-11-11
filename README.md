@@ -4,7 +4,25 @@
 
 현재는 개발용 로컬 실행을 기준으로 하며, 이후 다른 사용자에게 제공할 때도 중앙 사이트가 아니라 각자의 컴퓨터에서 실행되는 Docker Compose 기반 로컬 패키지를 우선합니다.
 
-## 로컬 환경 준비
+## Docker로 로컬 설치
+
+Windows에서 Docker Desktop과 PowerShell 7.4 이상을 준비한 뒤 저장소 루트에서 실행합니다. 최초 실행은 이미지를 빌드하고 MySQL, 백엔드, 프런트를 차례로 준비합니다.
+
+```powershell
+& .\scripts\LocalInstall.ps1 Start
+& .\scripts\LocalInstall.ps1 Status
+```
+
+브라우저 주소는 `http://127.0.0.1:3000`입니다. API는 `127.0.0.1:8080`에 열리고 MySQL은 컨테이너 내부에서 연결됩니다. 최초 실행에 `-FrontendPort`와 `-BackendPort`를 지정할 수 있습니다. 이후 포트와 DB 설정은 `backend/data/hankkeut-local/.env`에 유지됩니다.
+
+```powershell
+& .\scripts\LocalInstall.ps1 Stop
+& .\scripts\LocalInstall.ps1 Update
+```
+
+`Stop`은 컨테이너를 중지하며 DB 볼륨과 이력서 파일을 보존합니다. `Update`는 현재 체크아웃의 이미지를 먼저 빌드하고, 실행 중인 설치의 DB와 이력서를 `backend/data/hankkeut-local/backups`에 백업한 뒤 업데이트합니다. 업데이트에서 복구가 필요하면 생성된 ZIP을 아래 절차로 별도 MySQL과 폴더에 복원하세요.
+
+## 개발용 로컬 환경 준비
 
 백엔드의 예시 환경 파일을 복사한 뒤 로컬 값으로 변경합니다. 실제 비밀값이 담긴 `.env`는 Git에서 제외됩니다.
 
