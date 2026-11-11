@@ -70,7 +70,7 @@ class UrlJobPostingImportServiceTest {
         URI uri = URI.create("https://jobs.example.com/jobs/123");
         JobPosting existing = mock(JobPosting.class);
         when(existing.getId()).thenReturn(7L);
-        when(existing.getUpdatedAt()).thenReturn(LocalDateTime.now().minusMinutes(5));
+        when(existing.getLastFetchedAt()).thenReturn(LocalDateTime.now().minusMinutes(5));
         when(jobPostingRepository.findBySourceAndExternalId(
                 JobSource.WEB, JobPostingUrlIdentity.hash(uri.toString())))
                 .thenReturn(Optional.of(existing));

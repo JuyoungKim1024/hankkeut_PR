@@ -70,6 +70,9 @@ public class JobPosting extends BaseTimeEntity {
     @Column(name = "content_hash", length = 64)
     private String contentHash;
 
+    @Column(name = "last_fetched_at")
+    private LocalDateTime lastFetchedAt;
+
     protected JobPosting() {
     }
 
@@ -159,6 +162,14 @@ public class JobPosting extends BaseTimeEntity {
 
     public String getContentHash() {
         return contentHash;
+    }
+
+    public LocalDateTime getLastFetchedAt() {
+        return lastFetchedAt;
+    }
+
+    public void recordFetch(LocalDateTime fetchedAt) {
+        lastFetchedAt = fetchedAt;
     }
 
     public String getExternalId() {

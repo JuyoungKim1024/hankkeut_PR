@@ -76,8 +76,8 @@ public class UrlJobPostingImportService {
     }
 
     private boolean isFresh(JobPosting posting) {
-        return posting != null && posting.getUpdatedAt() != null
-                && posting.getUpdatedAt().isAfter(LocalDateTime.now().minus(refreshInterval));
+        return posting != null && posting.getLastFetchedAt() != null
+                && posting.getLastFetchedAt().isAfter(LocalDateTime.now().minus(refreshInterval));
     }
 
     private String companyName(URI uri) {

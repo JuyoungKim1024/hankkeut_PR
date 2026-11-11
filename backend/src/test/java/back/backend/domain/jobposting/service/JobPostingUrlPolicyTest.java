@@ -49,4 +49,23 @@ class JobPostingUrlPolicyTest {
         assertThat(result.toString())
                 .isEqualTo("https://www.jobkorea.co.kr/Recruit/GI_Read/48861911");
     }
+
+    @Test
+    @DisplayName("t5 허용 호스트가 비어 있으면 공개 URL도 가져오기 대상으로 쓰지 않는다")
+    void t5_emptyAllowlistRejectsUrl() {
+        assertThatThrownBy(() -> new JobPostingUrlPolicy("").validate("https://jobs.example.com/jobs/1"))
+                .isInstanceOfSatisfying(ApiException.class,
+                        exception -> assertThat(exception.code()).isEqualTo("JOB_SOURCE_NOT_ALLOWED"));
+    }
+
+    @Test
+    @DisplayName("t6 설정에 있어도 루프백·사설·공유 주소로 연결하지 않는다")
+    void t6_rejectsPrivateResolvedAddresses() {
+        for (String host : new String[]{"127.0.0.1", "10.0.0.2", "169.254.169.254", "100.64.0.1", "[::1]", "[fc00::1]"}) {
+            URI uri = URI.create("https://" + host + "/job");
+            assertThatThrownBy(() -> policy.requirePublicAddress(uri))
+                    .isInstanceOfSatisfying(ApiException.class,
+                            exception -> assertThat(exception.code()).isEqualTo("JOB_SOURCE_NOT_ALLOWED"));
+        }
+    }
 }

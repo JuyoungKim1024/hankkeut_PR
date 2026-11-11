@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
@@ -45,6 +47,35 @@ public class JobPostingUrlPolicy {
         } catch (URISyntaxException exception) {
             throw invalidUrl();
         }
+    }
+
+    void requirePublicAddress(URI uri) {
+        try {
+            if (Arrays.stream(InetAddress.getAllByName(uri.getHost())).allMatch(JobPostingUrlPolicy::isPublicAddress)) {
+                return;
+            }
+        } catch (UnknownHostException exception) {
+            throw new ApiException(HttpStatus.BAD_GATEWAY, "JOB_FETCH_FAILED", "채용공고 사이트 주소를 확인할 수 없습니다.");
+        }
+        throw new ApiException(HttpStatus.BAD_REQUEST, "JOB_SOURCE_NOT_ALLOWED", "공개 인터넷의 채용공고만 가져올 수 있습니다.");
+    }
+
+    private static boolean isPublicAddress(InetAddress address) {
+        if (address.isAnyLocalAddress() || address.isLoopbackAddress() || address.isLinkLocalAddress()
+                || address.isSiteLocalAddress() || address.isMulticastAddress()) {
+            return false;
+        }
+        byte[] bytes = address.getAddress();
+        int first = Byte.toUnsignedInt(bytes[0]);
+        int second = Byte.toUnsignedInt(bytes[1]);
+        if (bytes.length == 16) {
+            return (first & 0xe0) == 0x20 && !(first == 0x20 && second == 0x02);
+        }
+        int third = Byte.toUnsignedInt(bytes[2]);
+        return first != 0 && first < 224
+                && !(first == 100 && second >= 64 && second <= 127)
+                && !(first == 192 && second == 0 && third == 0)
+                && !(first == 198 && (second == 18 || second == 19));
     }
 
     private URI parse(String value) {

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ class JobPostingIngestionServiceTest {
 
     @Autowired JobPostingIngestionService ingestionService;
     @Autowired JobPostingRepository jobPostingRepository;
+    @Autowired JdbcClient jdbc;
 
     @BeforeEach
     void setUp() {
@@ -57,6 +59,24 @@ class JobPostingIngestionServiceTest {
         assertThat(jobPostingRepository.count()).isEqualTo(1);
         assertThat(updated.getTitle()).isEqualTo("주니어 백엔드 개발자");
         assertThat(updated.getContentHash()).isNotEqualTo(previousHash);
+    }
+
+    @Test
+    @DisplayName("t3 내용이 동일한 웹 공고도 마지막 수집 시각을 갱신한다")
+    void t3_unchangedWebPostingRefreshesFetchTime() {
+        CollectedJobPosting posting = posting("백엔드 개발자");
+        ingestionService.ingest(JobSource.WEB, List.of(posting));
+        JobPosting original = jobPostingRepository.findAll().getFirst();
+        LocalDateTime old = LocalDateTime.now().minusDays(1);
+        jdbc.sql("update job_posting set last_fetched_at = :old where id = :id")
+                .param("old", old).param("id", original.getId()).update();
+
+        JobPostingIngestionResult result = ingestionService.ingest(JobSource.WEB, List.of(posting));
+        JobPosting refreshed = jobPostingRepository.findAll().getFirst();
+
+        assertThat(result).isEqualTo(new JobPostingIngestionResult(1, 0, 0, 1));
+        assertThat(refreshed.getLastFetchedAt()).isAfter(old);
+        assertThat(refreshed.getContentHash()).isEqualTo(original.getContentHash());
     }
 
     private static CollectedJobPosting posting(String title) {
