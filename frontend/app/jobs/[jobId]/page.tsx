@@ -2,8 +2,9 @@ import { ArrowLeft, ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BackendUnavailable } from "@/components/backend-unavailable";
+import { JobMatchPanel } from "@/components/job-match-panel";
 import { JobSkillAnalysis } from "@/components/job-skill-analysis";
-import { BackendApiError, getJobPosting, getJobSkills } from "@/lib/backend-api";
+import { BackendApiError, getJobMatch, getJobPosting, getJobSkills } from "@/lib/backend-api";
 import { formatDate } from "@/lib/format";
 
 export default async function JobPostingDetailPage({ params }: { params: Promise<{ jobId: string }> }) {
@@ -13,9 +14,10 @@ export default async function JobPostingDetailPage({ params }: { params: Promise
 
   let job;
   let skills;
+  let match;
   try {
     job = await getJobPosting(parsedId);
-    skills = await getJobSkills(parsedId);
+    [skills, match] = await Promise.all([getJobSkills(parsedId), getJobMatch(parsedId)]);
   } catch (error) {
     if (error instanceof BackendApiError && error.status === 404) notFound();
     if (error instanceof BackendApiError) return <BackendUnavailable />;
@@ -53,6 +55,7 @@ export default async function JobPostingDetailPage({ params }: { params: Promise
           <ContentSection title="자격요건" content={job.qualification} />
           <ContentSection title="우대사항" content={job.preference} />
           <JobSkillAnalysis jobId={parsedId} skills={skills} />
+          <JobMatchPanel jobId={parsedId} match={match} />
         </div>
 
         <footer className="flex flex-col gap-4 border-t border-ink-100 bg-ink-50 p-6 sm:flex-row sm:items-center sm:justify-between sm:px-9">
