@@ -7,6 +7,7 @@ import type {
   ManualJobPostingInput,
 } from "@/lib/job-postings";
 import type { Profile } from "@/lib/profile";
+import type { JobMatch } from "@/lib/job-match";
 import type { ResumeSummary } from "@/lib/resumes";
 import type { ApplicationRecord, ApplicationStatus } from "@/lib/applications";
 
@@ -51,6 +52,14 @@ export async function getJobPosting(jobId: number): Promise<JobPostingDetail> {
 
 export async function getJobSkills(jobId: number): Promise<JobSkill[]> {
   return request<JobSkill[]>(`/api/jobs/${jobId}/skills`);
+}
+
+export async function getJobMatch(jobId: number): Promise<JobMatch> {
+  return request<JobMatch>(`/api/jobs/${jobId}/match`);
+}
+
+export async function calculateJobMatch(jobId: number): Promise<JobMatch> {
+  return request<JobMatch>(`/api/jobs/${jobId}/match`, { method: "POST" });
 }
 
 export async function analyzeJobSkills(jobId: number): Promise<JobSkill[]> {
