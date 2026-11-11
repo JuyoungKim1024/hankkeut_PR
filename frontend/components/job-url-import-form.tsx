@@ -35,7 +35,7 @@ export function JobUrlImportForm() {
         </p>
       ) : null}
       <p className="text-xs leading-5 text-ink-500">
-        현재 잡코리아 공개 공고 URL을 지원합니다. 같은 공고는 6시간 동안 다시 요청하지 않으며 로그인, CAPTCHA 또는 접근 제한이 있는 페이지는 가져오지 않습니다.
+        가져오기가 허용된 공개 공고 URL을 사용할 수 있습니다. 가져오지 못하면 아래에서 공고 내용을 직접 입력하세요.
       </p>
     </form>
   );
