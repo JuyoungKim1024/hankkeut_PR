@@ -2,6 +2,7 @@ import type {
   JobPostingDetail,
   JobPostingPage,
   JobPostingSearch,
+  JobSkill,
   ManualJobPostingImportResult,
   ManualJobPostingInput,
 } from "@/lib/job-postings";
@@ -46,6 +47,14 @@ export async function getJobPostings(search: JobPostingSearch): Promise<JobPosti
 
 export async function getJobPosting(jobId: number): Promise<JobPostingDetail> {
   return request<JobPostingDetail>(`/api/jobs/${jobId}`);
+}
+
+export async function getJobSkills(jobId: number): Promise<JobSkill[]> {
+  return request<JobSkill[]>(`/api/jobs/${jobId}/skills`);
+}
+
+export async function analyzeJobSkills(jobId: number): Promise<JobSkill[]> {
+  return request<JobSkill[]>(`/api/jobs/${jobId}/skills/analysis`, { method: "POST" });
 }
 
 export async function importJobPosting(input: ManualJobPostingInput): Promise<ManualJobPostingImportResult> {

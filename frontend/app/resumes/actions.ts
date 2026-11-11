@@ -12,8 +12,6 @@ export type ResumeActionState = {
   message: string | null;
 };
 
-export const initialResumeActionState: ResumeActionState = { error: null, message: null };
-
 export async function uploadResume(
   _previousState: ResumeActionState,
   formData: FormData,
@@ -21,6 +19,9 @@ export async function uploadResume(
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) {
     return { error: "PDF 또는 DOCX 파일을 선택해 주세요.", message: null };
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    return { error: "10MB 이하의 파일을 선택해 주세요.", message: null };
   }
 
   try {

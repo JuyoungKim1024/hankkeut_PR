@@ -1,15 +1,12 @@
 "use client";
 
 import { useActionState } from "react";
-import {
-  createJobPosting,
-  initialImportJobPostingState,
-} from "@/app/jobs/actions";
+import { createJobPosting } from "@/app/jobs/actions";
 
 const inputClass = "mt-2 w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-ink-300 focus:border-ink-950 focus:ring-2 focus:ring-ink-950/10";
 
 export function JobImportForm() {
-  const [state, action, pending] = useActionState(createJobPosting, initialImportJobPostingState);
+  const [state, action, pending] = useActionState(createJobPosting, { error: null });
 
   return (
     <form action={action} className="space-y-8">

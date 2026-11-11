@@ -58,3 +58,8 @@ export type ManualJobPostingImportResult = {
   updated: number;
   unchanged: number;
 };
+
+export type JobSkill = {
+  name: string;
+  type: "REQUIRED" | "PREFERRED";
+};
