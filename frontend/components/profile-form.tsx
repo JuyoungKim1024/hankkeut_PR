@@ -2,13 +2,13 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import { useActionState, useState } from "react";
-import { initialProfileFormState, updateProfile } from "@/app/profile/actions";
+import { updateProfile } from "@/app/profile/actions";
 import type { Profile, ProfileSkill } from "@/lib/profile";
 
 const inputClass = "mt-2 h-11 w-full rounded-xl border border-ink-200 bg-white px-3 text-sm outline-none transition focus:border-ink-950 focus:ring-2 focus:ring-ink-950/10";
 
 export function ProfileForm({ profile }: { profile: Profile | null }) {
-  const [state, action, pending] = useActionState(updateProfile, initialProfileFormState);
+  const [state, action, pending] = useActionState(updateProfile, { error: null, message: null });
   const [skills, setSkills] = useState<ProfileSkill[]>(profile?.skills ?? []);
 
   function addSkill() {

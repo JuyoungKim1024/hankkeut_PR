@@ -10,8 +10,6 @@ import {
 import type { ApplicationStatus } from "@/lib/applications";
 
 export type ApplicationActionState = { error: string | null; message: string | null };
-export const initialApplicationActionState: ApplicationActionState = { error: null, message: null };
-
 export async function createApplication(
   _previousState: ApplicationActionState,
   formData: FormData,

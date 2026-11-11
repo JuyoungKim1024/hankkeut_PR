@@ -1,10 +1,10 @@
 "use client";
 
 import { useActionState } from "react";
-import { createJobPostingFromUrl, initialImportJobPostingState } from "@/app/jobs/actions";
+import { createJobPostingFromUrl } from "@/app/jobs/actions";
 
 export function JobUrlImportForm() {
-  const [state, action, pending] = useActionState(createJobPostingFromUrl, initialImportJobPostingState);
+  const [state, action, pending] = useActionState(createJobPostingFromUrl, { error: null });
 
   return (
     <form action={action} className="space-y-4">

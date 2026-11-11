@@ -9,8 +9,6 @@ export type ProfileFormState = {
   message: string | null;
 };
 
-export const initialProfileFormState: ProfileFormState = { error: null, message: null };
-
 export async function updateProfile(
   _previousState: ProfileFormState,
   formData: FormData,

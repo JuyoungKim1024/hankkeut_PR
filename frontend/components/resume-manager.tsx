@@ -3,12 +3,14 @@
 import { FileText, Trash2, Upload } from "lucide-react";
 import { useActionState } from "react";
 import {
-  initialResumeActionState,
+  type ResumeActionState,
   removeResume,
   uploadResume,
 } from "@/app/resumes/actions";
 import { formatDate } from "@/lib/format";
 import type { ResumeSummary } from "@/lib/resumes";
+
+const initialResumeActionState: ResumeActionState = { error: null, message: null };
 
 export function ResumeManager({ resumes }: { resumes: ResumeSummary[] }) {
   const [state, action, pending] = useActionState(uploadResume, initialResumeActionState);

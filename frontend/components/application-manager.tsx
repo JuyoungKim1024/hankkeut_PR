@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 import {
   createApplication,
-  initialApplicationActionState,
+  type ApplicationActionState,
   removeApplication,
   updateApplication,
 } from "@/app/applications/actions";
@@ -15,6 +15,8 @@ import {
   type ApplicationRecord,
 } from "@/lib/applications";
 import type { JobPostingSummary } from "@/lib/job-postings";
+
+const initialApplicationActionState: ApplicationActionState = { error: null, message: null };
 
 const fieldClass = "h-11 w-full rounded-xl border border-ink-200 bg-white px-3 text-sm outline-none focus:border-ink-950";
 

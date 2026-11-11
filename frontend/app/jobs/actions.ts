@@ -9,8 +9,6 @@ export type ImportJobPostingState = {
   error: string | null;
 };
 
-export const initialImportJobPostingState: ImportJobPostingState = { error: null };
-
 export async function createJobPostingFromUrl(
   _previousState: ImportJobPostingState,
   formData: FormData,
