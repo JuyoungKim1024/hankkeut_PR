@@ -5,6 +5,7 @@ import back.backend.domain.jobposting.dto.JobPostingPageResponse;
 import back.backend.domain.jobposting.dto.JobPostingSort;
 import back.backend.domain.jobposting.entity.JobPostingStatus;
 import back.backend.domain.jobposting.service.JobPostingQueryService;
+import back.backend.domain.jobposting.service.ResumeJobDiscoveryService;
 import back.backend.global.response.ApiResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,9 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class JobPostingQueryController {
 
     private final JobPostingQueryService queryService;
+    private final ResumeJobDiscoveryService discovery;
 
-    public JobPostingQueryController(JobPostingQueryService queryService) {
+    public JobPostingQueryController(JobPostingQueryService queryService, ResumeJobDiscoveryService discovery) {
         this.queryService = queryService;
+        this.discovery = discovery;
+    }
+
+    @GetMapping("/recommendations")
+    public ApiResponse<ResumeJobDiscoveryService.Results> recommend(@RequestParam long resumeId, @RequestParam String board) {
+        return ApiResponse.success(discovery.discover(resumeId, board.strip()));
     }
 
     @GetMapping

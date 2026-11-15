@@ -34,10 +34,13 @@ export default async function JobPostingsPage({ searchParams }: { searchParams: 
             지원을 고민 중인 공고를 직접 저장하고 한곳에서 비교하세요.
           </p>
         </div>
-        <Link href="/jobs/new" className="inline-flex items-center justify-center gap-2 rounded-xl bg-ink-950 px-4 py-3 text-sm font-bold text-white">
-          <Plus aria-hidden="true" className="h-4 w-4" />
-          공고 추가
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/jobs/recommendations" className="inline-flex items-center rounded-xl border border-ink-200 px-4 py-3 text-sm font-bold">이력서 기반 추천</Link>
+          <Link href="/jobs/new" className="inline-flex items-center justify-center gap-2 rounded-xl bg-ink-950 px-4 py-3 text-sm font-bold text-white">
+            <Plus aria-hidden="true" className="h-4 w-4" />
+            공고 추가
+          </Link>
+        </div>
       </header>
 
       <form className="mt-10 grid gap-3 rounded-2xl border border-ink-200 bg-white p-4 sm:grid-cols-2 xl:grid-cols-[minmax(260px,1fr)_180px_150px_150px_auto]" method="get">
