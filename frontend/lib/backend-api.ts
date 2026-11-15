@@ -7,6 +7,8 @@ import type {
   ManualJobPostingInput,
 } from "@/lib/job-postings";
 import type { Profile } from "@/lib/profile";
+import type { ExperienceInput, ExperienceWorkspace } from "@/lib/resume-experiences";
+import type { ResumeJobResults } from "@/lib/resume-job-results";
 import type { JobMatch } from "@/lib/job-match";
 import type { ResumeSummary } from "@/lib/resumes";
 import type { ApplicationRecord, ApplicationStatus } from "@/lib/applications";
@@ -33,6 +35,27 @@ export class BackendApiError extends Error {
 }
 
 const backendBaseUrl = (process.env.BACKEND_BASE_URL ?? "http://localhost:8080").replace(/\/$/, "");
+
+export function getResumeJobResults(resumeId: number, board: string) {
+  const query = new URLSearchParams({ resumeId: String(resumeId), board });
+  return request<ResumeJobResults>(`/api/jobs/recommendations?${query}`);
+}
+
+export function getResumeExperiences(resumeId: number) {
+  return request<ExperienceWorkspace>(`/api/resumes/${resumeId}/experiences`);
+}
+
+export function saveResumeExperience(resumeId: number, experienceId: number | null, input: ExperienceInput) {
+  const base = `/api/resumes/${resumeId}/experiences`;
+  return request(experienceId ? `${base}/${experienceId}` : base, {
+    method: experienceId ? "PUT" : "POST",
+    headers: { "Content-Type": "application/json" }, body: JSON.stringify(input),
+  });
+}
+
+export function deleteResumeExperience(resumeId: number, experienceId: number) {
+  return deleteResource(`/api/resumes/${resumeId}/experiences/${experienceId}`, "경험을 삭제하지 못했습니다.");
+}
 
 export async function getJobPostings(search: JobPostingSearch): Promise<JobPostingPage> {
   const params = new URLSearchParams();

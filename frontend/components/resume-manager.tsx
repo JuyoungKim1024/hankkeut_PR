@@ -1,6 +1,7 @@
 "use client";
 
 import { FileText, Trash2, Upload } from "lucide-react";
+import Link from "next/link";
 import { useActionState } from "react";
 import {
   type ResumeActionState,
@@ -59,7 +60,10 @@ export function ResumeManager({ resumes }: { resumes: ResumeSummary[] }) {
                     <p className="mt-1 text-xs text-ink-500">{resume.fileType} · 추출 {resume.extractedTextLength.toLocaleString("ko-KR")}자 · {formatDate(resume.createdAt)}</p>
                   </div>
                 </div>
-                <DeleteResumeForm resumeId={resume.id} fileName={resume.originalFileName} />
+                <div className="flex items-center gap-3">
+                  <Link href={`/resumes/${resume.id}`} className="text-sm font-bold underline">경험 확인</Link>
+                  <DeleteResumeForm resumeId={resume.id} fileName={resume.originalFileName} />
+                </div>
               </article>
             ))}
           </div>
